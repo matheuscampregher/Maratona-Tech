@@ -1,0 +1,4526 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sentinel Mail - Plataforma profissional de defesa contra phishing">
+<title>SENTINEL MAIL // Vigilância Inteligente contra Phishing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+/* ============================================
+   RESET & ROOT VARIABLES
+   ============================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Dark theme (default) */
+  --bg-primary: #05070d;
+  --bg-secondary: #0a0f1c;
+  --bg-tertiary: #0f1524;
+  --bg-card: rgba(18, 24, 40, 0.7);
+  --bg-card-hover: rgba(25, 33, 55, 0.85);
+  --bg-glass: rgba(15, 21, 36, 0.55);
+  
+  --accent-primary: #00d9ff;
+  --accent-secondary: #0077ff;
+  --accent-tertiary: #7b2cff;
+  --accent-success: #00ff88;
+  --accent-warning: #ffb800;
+  --accent-danger: #ff3366;
+  --accent-info: #00d4ff;
+  
+  --text-primary: #e8edf7;
+  --text-secondary: #9aa7c2;
+  --text-muted: #5a6882;
+  --text-inverse: #05070d;
+  
+  --border-color: rgba(100, 130, 180, 0.15);
+  --border-accent: rgba(0, 217, 255, 0.3);
+  --border-glow: rgba(0, 217, 255, 0.5);
+  
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 32px rgba(0, 217, 255, 0.25);
+  --shadow-glow-danger: 0 0 32px rgba(255, 51, 102, 0.3);
+  
+  --gradient-primary: linear-gradient(135deg, #00d9ff 0%, #0077ff 50%, #7b2cff 100%);
+  --gradient-accent: linear-gradient(135deg, #00ff88 0%, #00d9ff 100%);
+  --gradient-danger: linear-gradient(135deg, #ff3366 0%, #ff0080 100%);
+  --gradient-warning: linear-gradient(135deg, #ffb800 0%, #ff6b00 100%);
+  --gradient-bg: radial-gradient(ellipse at top, #0a1530 0%, #05070d 50%);
+  
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 400ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg-primary: #f5f7fb;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #eef2f9;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-glass: rgba(255, 255, 255, 0.7);
+  
+  --accent-primary: #0077ff;
+  --accent-secondary: #0055cc;
+  --accent-tertiary: #6b1fd9;
+  --accent-success: #00a855;
+  --accent-warning: #e68a00;
+  --accent-danger: #d91640;
+  
+  --text-primary: #0a1128;
+  --text-secondary: #4a5878;
+  --text-muted: #8090aa;
+  --text-inverse: #ffffff;
+  
+  --border-color: rgba(100, 130, 180, 0.18);
+  --border-accent: rgba(0, 119, 255, 0.35);
+  
+  --shadow-sm: 0 2px 8px rgba(100, 130, 180, 0.08);
+  --shadow-md: 0 8px 24px rgba(100, 130, 180, 0.12);
+  --shadow-lg: 0 16px 48px rgba(100, 130, 180, 0.18);
+  --shadow-glow: 0 0 24px rgba(0, 119, 255, 0.15);
+  
+  --gradient-bg: radial-gradient(ellipse at top, #e8f0ff 0%, #f5f7fb 50%);
+}
+
+/* ============================================
+   BASE
+   ============================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-primary);
+  background-image: var(--gradient-bg);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background var(--transition-base), color var(--transition-base);
+}
+
+/* Particle background */
+#particles-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+[data-theme="light"] #particles-canvas {
+  opacity: 0.25;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { 
+  background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent-primary); }
+
+/* ============================================
+   LOADING SCREEN
+   ============================================ */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+.loading-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.loading-logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 2rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.85; }
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.9rem 2rem;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  cursor: pointer;
+  transition: transform var(--transition-base);
+}
+
+.logo:hover { transform: translateY(-2px); }
+
+.logo-icon {
+  width: 44px;
+  height: 44px;
+  background: var(--gradient-primary);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-icon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.logo-icon svg {
+  width: 26px;
+  height: 26px;
+  color: white;
+  z-index: 1;
+}
+
+.logo-text-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-title {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logo-subtitle {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent-success);
+  padding: 0.4rem 0.8rem;
+  background: rgba(0, 255, 136, 0.08);
+  border: 1px solid rgba(0, 255, 136, 0.2);
+  border-radius: 20px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--accent-success);
+  border-radius: 50%;
+  animation: blink 2s ease-in-out infinite;
+  box-shadow: 0 0 8px var(--accent-success);
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Theme toggle */
+.theme-toggle {
+  display: flex;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.theme-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-base);
+  font-size: 0.95rem;
+}
+
+.theme-btn:hover { color: var(--text-primary); }
+
+.theme-btn.active {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+.tabs-wrapper {
+  max-width: 1400px;
+  margin: 1.5rem auto 0;
+  padding: 0 2rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 5px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tab-btn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 0.6rem 1.1rem;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tab-btn.active {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+
+.tab-btn .tab-icon { font-size: 1rem; }
+
+/* ============================================
+   MAIN CONTENT
+   ============================================ */
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-content {
+  display: none;
+  animation: fadeInUp 0.5s ease;
+}
+
+.tab-content.active { display: block; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================
+   CARDS & GLASSMORPHISM
+   ============================================ */
+.card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card:hover::before { opacity: 1; }
+
+.section-title {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  letter-spacing: 0.5px;
+}
+
+.section-title .title-icon {
+  width: 28px;
+  height: 28px;
+  background: var(--gradient-primary);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.3);
+}
+
+.section {
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.5s ease backwards;
+}
+
+.section:nth-child(2) { animation-delay: 0.1s; }
+.section:nth-child(3) { animation-delay: 0.2s; }
+.section:nth-child(4) { animation-delay: 0.3s; }
+.section:nth-child(5) { animation-delay: 0.4s; }
+
+/* ============================================
+   HIGHLIGHTS
+   ============================================ */
+.highlight { color: var(--accent-primary); font-weight: 600; }
+.highlight-success { color: var(--accent-success); font-weight: 600; }
+.highlight-warning { color: var(--accent-warning); font-weight: 600; }
+.highlight-danger { color: var(--accent-danger); font-weight: 600; }
+.highlight-purple { color: var(--accent-tertiary); font-weight: 600; }
+
+.text-muted { color: var(--text-muted); }
+.text-secondary { color: var(--text-secondary); }
+
+/* ============================================
+   ANALOGY BOX
+   ============================================ */
+.analogy-box {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(123, 44, 255, 0.08));
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.25rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.analogy-box .icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.analogy-box p {
+  margin: 0;
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ============================================
+   FLOW TIMELINE (Horizontal)
+   ============================================ */
+.timeline-horizontal {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-top: 1.5rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+  position: relative;
+}
+
+.timeline-step {
+  flex: 1;
+  min-width: 110px;
+  position: relative;
+  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.timeline-step::after {
+  content: '';
+  position: absolute;
+  top: 22px;
+  right: -20%;
+  width: 40%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), transparent);
+  opacity: 0.4;
+}
+
+.timeline-step:last-child::after { display: none; }
+
+.step-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--gradient-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  margin-bottom: 0.6rem;
+  box-shadow: 0 0 16px rgba(0, 217, 255, 0.3);
+  position: relative;
+  z-index: 1;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+.timeline-step:nth-child(even) .step-icon {
+  animation-delay: 0.5s;
+  background: var(--gradient-danger);
+  box-shadow: 0 0 16px rgba(255, 51, 102, 0.3);
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.step-title {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.2rem;
+}
+
+.step-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ============================================
+   SIGNS GRID
+   ============================================ */
+.signs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.sign-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  transition: all var(--transition-base);
+  cursor: default;
+}
+
+.sign-item:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.sign-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 184, 0, 0.1);
+  border: 1px solid rgba(255, 184, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.sign-item h4 {
+  font-size: 0.88rem;
+  color: var(--accent-warning);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.sign-item p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ============================================
+   CHECKLIST
+   ============================================ */
+.checklist {
+  list-style: none;
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.65rem;
+}
+
+.checklist li {
+  padding: 0.85rem 1rem;
+  background: rgba(0, 255, 136, 0.04);
+  border: 1px solid rgba(0, 255, 136, 0.12);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+  font-size: 0.88rem;
+}
+
+.checklist li:hover {
+  background: rgba(0, 255, 136, 0.08);
+  border-color: rgba(0, 255, 136, 0.35);
+  transform: translateX(3px);
+}
+
+.checklist li .check-icon {
+  color: var(--accent-success);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.checklist li strong { color: var(--text-primary); }
+
+/* ============================================
+   COMPARISON
+   ============================================ */
+.comparison-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .comparison-container { grid-template-columns: 1fr; }
+}
+
+.email-example {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-md);
+  transition: transform var(--transition-base);
+}
+
+.email-example:hover { transform: translateY(-3px); }
+
+.email-example.legitimate {
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.email-example.phishing {
+  border: 1px solid rgba(255, 51, 102, 0.3);
+}
+
+.email-header {
+  padding: 0.85rem 1.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legitimate .email-header {
+  background: linear-gradient(90deg, rgba(0, 255, 136, 0.15), rgba(0, 255, 136, 0.05));
+  color: var(--accent-success);
+}
+
+.phishing .email-header {
+  background: linear-gradient(90deg, rgba(255, 51, 102, 0.15), rgba(255, 51, 102, 0.05));
+  color: var(--accent-danger);
+}
+
+.email-body {
+  padding: 1.15rem;
+  background: var(--bg-card);
+}
+
+.email-body .field {
+  margin-bottom: 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.field-label {
+  color: var(--text-muted);
+  font-weight: 500;
+  min-width: 50px;
+}
+
+.field-value { color: var(--text-secondary); }
+
+.email-body .message {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.suspicious {
+  background: rgba(255, 51, 102, 0.15);
+  border-bottom: 2px wavy var(--accent-danger);
+  padding: 0 3px;
+  border-radius: 3px;
+  color: var(--accent-danger);
+  font-weight: 500;
+}
+
+/* ============================================
+   ANALYZE TAB - Original
+   ============================================ */
+.analyze-container { max-width: 1000px; margin: 0 auto; }
+
+.email-textarea {
+  width: 100%;
+  min-height: 220px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  resize: vertical;
+  transition: all var(--transition-base);
+  line-height: 1.7;
+}
+
+.email-textarea:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.15);
+}
+
+.email-textarea::placeholder { color: var(--text-muted); }
+
+.sample-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.sample-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--accent-primary);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sample-btn:hover {
+  background: rgba(0, 217, 255, 0.1);
+  border-color: var(--border-accent);
+  transform: translateY(-1px);
+}
+
+.btn-scan {
+  width: 100%;
+  padding: 1.1rem 2rem;
+  background: var(--gradient-accent);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-inverse);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-glow);
+  margin-top: 1rem;
+}
+
+.btn-scan:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 217, 255, 0.4);
+}
+
+.btn-scan:active { transform: translateY(0); }
+
+.btn-scan:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-scan::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.btn-scan:hover::before { left: 100%; }
+
+/* Terminal output */
+.terminal-output {
+  background: #0a0f1c;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-top: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  max-height: 320px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .terminal-output {
+  background: #1a1f2e;
+  color: #e8edf7;
+}
+
+.terminal-output.active { display: block; animation: fadeInUp 0.4s ease; }
+
+.terminal-line {
+  margin-bottom: 0.35rem;
+  opacity: 0;
+  animation: typeIn 0.3s ease forwards;
+  line-height: 1.5;
+}
+
+@keyframes typeIn {
+  from { opacity: 0; transform: translateX(-5px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.terminal-line .prefix { color: var(--accent-success); font-weight: 600; }
+.terminal-line .info { color: var(--accent-info); }
+.terminal-line .warn { color: var(--accent-warning); }
+.terminal-line .error { color: var(--accent-danger); font-weight: 600; }
+.terminal-line .muted { color: #6a7a94; }
+
+/* Results */
+.results-container { margin-top: 1.5rem; display: none; }
+.results-container.active { display: block; animation: fadeInUp 0.5s ease; }
+
+.result-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: all var(--transition-base);
+}
+
+.result-card:hover {
+  border-color: var(--border-accent);
+  box-shadow: var(--shadow-md);
+}
+
+.result-card-title {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .results-grid { grid-template-columns: 1fr; }
+}
+
+.results-grid .full-width { grid-column: 1 / -1; }
+
+/* Risk Meter - Redesigned */
+.meter-container {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.meter-wrapper {
+  position: relative;
+  width: 220px;
+  height: 120px;
+  margin: 0 auto 1rem;
+  overflow: hidden;
+}
+
+.meter-bg {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--accent-success) 0deg,
+    var(--accent-warning) 90deg,
+    var(--accent-danger) 180deg
+  );
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+  position: relative;
+  opacity: 0.9;
+}
+
+.meter-bg::after {
+  content: '';
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  right: 30px;
+  bottom: 0;
+  background: var(--bg-card);
+  border-radius: 50%;
+  clip-path: polygon(0 0, 100% 0, 100% 62%, 0 62%);
+}
+
+.meter-needle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  height: 90px;
+  background: var(--text-primary);
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(-90deg);
+  transition: transform 1.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 2px;
+  z-index: 2;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.meter-needle::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.6);
+}
+
+.meter-value {
+  font-family: var(--font-mono);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: color 0.5s ease;
+  text-shadow: 0 0 20px currentColor;
+}
+
+.meter-label {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+}
+
+/* Verdict Badge */
+.verdict-badge {
+  display: inline-block;
+  padding: 0.6rem 1.8rem;
+  border-radius: 30px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.verdict-badge.legitimate {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.1));
+  color: var(--accent-success);
+  border: 2px solid rgba(0, 255, 136, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+}
+
+.verdict-badge.suspicious {
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.2), rgba(255, 184, 0, 0.1));
+  color: var(--accent-warning);
+  border: 2px solid rgba(255, 184, 0, 0.5);
+  box-shadow: 0 0 20px rgba(255, 184, 0, 0.2);
+}
+
+.verdict-badge.danger {
+  background: linear-gradient(135deg, rgba(255, 51, 102, 0.25), rgba(255, 51, 102, 0.1));
+  color: var(--accent-danger);
+  border: 2px solid rgba(255, 51, 102, 0.6);
+  box-shadow: 0 0 24px rgba(255, 51, 102, 0.4);
+  animation: dangerPulse 2s ease-in-out infinite;
+}
+
+@keyframes dangerPulse {
+  0%, 100% { box-shadow: 0 0 24px rgba(255, 51, 102, 0.4); }
+  50% { box-shadow: 0 0 36px rgba(255, 51, 102, 0.7); }
+}
+
+/* Signals list */
+.signals-list { list-style: none; }
+
+.signal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.9rem;
+  margin-bottom: 0.6rem;
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.2);
+  border-left: 3px solid transparent;
+  transition: all var(--transition-base);
+}
+
+[data-theme="light"] .signal-item { background: rgba(0, 0, 0, 0.04); }
+
+.signal-item:hover {
+  transform: translateX(4px);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.signal-item.severity-high { border-left-color: var(--accent-danger); }
+.signal-item.severity-medium { border-left-color: var(--accent-warning); }
+.signal-item.severity-low { border-left-color: var(--accent-info); }
+
+.signal-icon { font-size: 1.2rem; flex-shrink: 0; }
+
+.signal-info { flex: 1; }
+
+.signal-info h5 {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.signal-info p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.signal-severity {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 10px;
+  margin-left: auto;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.severity-high .signal-severity {
+  background: rgba(255, 51, 102, 0.2);
+  color: var(--accent-danger);
+}
+
+.severity-medium .signal-severity {
+  background: rgba(255, 184, 0, 0.2);
+  color: var(--accent-warning);
+}
+
+.severity-low .signal-severity {
+  background: rgba(0, 212, 255, 0.2);
+  color: var(--accent-info);
+}
+
+/* Recommendations */
+.recommendations { list-style: none; }
+
+.recommendations li {
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.recommendations li:last-child { border-bottom: none; }
+
+.recommendations li .rec-icon {
+  color: var(--accent-primary);
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+/* Disclaimer */
+.disclaimer {
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.08), rgba(255, 184, 0, 0.03));
+  border: 1px solid rgba(255, 184, 0, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1.15rem;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.disclaimer .icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  color: var(--accent-warning);
+}
+
+/* ============================================
+   INVESTIGATOR MODE
+   ============================================ */
+.investigator-container { max-width: 1000px; margin: 0 auto; }
+
+.investigation-steps {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.investigation-step {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all var(--transition-base);
+  opacity: 0.5;
+}
+
+.investigation-step.active {
+  opacity: 1;
+  border-color: var(--border-accent);
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.15);
+}
+
+.investigation-step.completed {
+  opacity: 1;
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.step-status {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.1rem;
+  border: 2px solid var(--border-color);
+  transition: all var(--transition-base);
+}
+
+.investigation-step.active .step-status {
+  border-color: var(--accent-primary);
+  background: rgba(0, 217, 255, 0.15);
+  color: var(--accent-primary);
+  animation: pulseRing 1.5s ease-in-out infinite;
+}
+
+.investigation-step.completed .step-status {
+  border-color: var(--accent-success);
+  background: rgba(0, 255, 136, 0.2);
+  color: var(--accent-success);
+}
+
+@keyframes pulseRing {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 217, 255, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 217, 255, 0); }
+}
+
+.step-content { flex: 1; }
+
+.step-title {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.step-progress {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.step-progress-bar {
+  height: 100%;
+  background: var(--gradient-primary);
+  width: 0;
+  transition: width 0.6s ease;
+}
+
+.step-result {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.step-result.show { opacity: 1; }
+
+.step-result.success { color: var(--accent-success); }
+.step-result.warning { color: var(--accent-warning); }
+.step-result.danger { color: var(--accent-danger); }
+
+/* ============================================
+   QUIZ
+   ============================================ */
+.quiz-container { max-width: 900px; margin: 0 auto; }
+
+.quiz-start-screen, .quiz-result-screen {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.quiz-start-screen h2 {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.quiz-start-screen p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.quiz-stats-preview {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.5rem;
+  min-width: 120px;
+}
+
+.stat-card .value {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  display: block;
+}
+
+.stat-card .label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  border: none;
+  color: white;
+  padding: 0.9rem 2.2rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-glow);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 217, 255, 0.4);
+}
+
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border-accent);
+  color: var(--accent-primary);
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin: 0.3rem;
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 217, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Quiz progress */
+.quiz-progress-wrapper {
+  margin-bottom: 2rem;
+}
+
+.quiz-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.quiz-progress-label {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.quiz-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.quiz-progress-fill {
+  height: 100%;
+  background: var(--gradient-primary);
+  width: 0;
+  transition: width 0.5s ease;
+  border-radius: 4px;
+}
+
+/* Quiz question */
+.quiz-question-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeInUp 0.4s ease;
+}
+
+.quiz-email-mock {
+  background: var(--bg-tertiary);
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.quiz-email-header-mock {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px dashed var(--border-color);
+  flex-wrap: wrap;
+}
+
+.quiz-email-field {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.quiz-email-field .label {
+  color: var(--text-muted);
+  margin-right: 0.4rem;
+}
+
+.quiz-email-field .value { color: var(--text-primary); font-weight: 500; }
+
+.quiz-email-body {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+}
+
+.quiz-answers {
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.quiz-answer-btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 1rem;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.quiz-answer-btn:hover:not(:disabled) {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.quiz-answer-btn.correct {
+  background: rgba(0, 255, 136, 0.15);
+  border-color: var(--accent-success);
+  color: var(--accent-success);
+}
+
+.quiz-answer-btn.wrong {
+  background: rgba(255, 51, 102, 0.15);
+  border-color: var(--accent-danger);
+  color: var(--accent-danger);
+}
+
+.quiz-answer-btn:disabled { cursor: not-allowed; }
+
+.quiz-feedback {
+  padding: 1rem 1.5rem;
+  background: var(--bg-tertiary);
+  border-top: 1px solid var(--border-color);
+  display: none;
+  animation: fadeInUp 0.4s ease;
+}
+
+.quiz-feedback.show { display: block; }
+
+.quiz-feedback-title {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.quiz-feedback.correct .quiz-feedback-title { color: var(--accent-success); }
+.quiz-feedback.wrong .quiz-feedback-title { color: var(--accent-danger); }
+
+.quiz-feedback p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.quiz-signs {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+.quiz-sign {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--accent-warning);
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.quiz-next-btn {
+  margin-top: 1rem;
+}
+
+/* Quiz result */
+.quiz-result-screen {
+  text-align: center;
+}
+
+.result-score-circle {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: conic-gradient(
+    var(--accent-primary) 0deg,
+    var(--accent-primary) calc(var(--pct) * 3.6deg),
+    var(--bg-tertiary) calc(var(--pct) * 3.6deg)
+  );
+  transition: background 1s ease;
+}
+
+.result-score-circle::before {
+  content: '';
+  position: absolute;
+  inset: 12px;
+  background: var(--bg-card);
+  border-radius: 50%;
+}
+
+.result-score-value {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.result-score-value small {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.result-level {
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
+  background: var(--gradient-primary);
+  border-radius: 20px;
+  color: white;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 1rem 0;
+}
+
+.result-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+/* ============================================
+   PROFESSOR MODE
+   ============================================ */
+.professor-container { max-width: 1000px; margin: 0 auto; }
+
+.professor-controls {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.professor-example-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.professor-email-view {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.professor-analysis {
+  padding: 1.5rem;
+  display: none;
+  animation: fadeInUp 0.5s ease;
+}
+
+.professor-analysis.revealed { display: block; }
+
+.professor-analysis h4 {
+  font-family: var(--font-mono);
+  color: var(--accent-primary);
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.professor-counter {
+  text-align: center;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+/* ============================================
+   GENERATOR
+   ============================================ */
+.generator-container { max-width: 900px; margin: 0 auto; }
+
+.generator-brands {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.brand-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 0.75rem;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-card:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.brand-card.selected {
+  border-color: var(--accent-primary);
+  background: rgba(0, 217, 255, 0.08);
+}
+
+.brand-icon {
+  font-size: 2rem;
+}
+
+.brand-name {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.generated-email-wrapper {
+  display: none;
+  animation: fadeInUp 0.5s ease;
+}
+
+.generated-email-wrapper.show { display: block; }
+
+.generated-email {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.generated-email-body {
+  padding: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.generated-email-body .highlight-phish {
+  background: rgba(255, 51, 102, 0.2);
+  border-left: 3px solid var(--accent-danger);
+  padding: 0.2rem 0.5rem;
+  margin: 0.2rem 0;
+  display: inline-block;
+  border-radius: 3px;
+  color: var(--accent-danger);
+  font-weight: 600;
+  cursor: help;
+  position: relative;
+}
+
+.techniques-list {
+  margin-top: 1.5rem;
+}
+
+.technique-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 3px solid var(--accent-danger);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  transition: all var(--transition-base);
+}
+
+.technique-item:hover {
+  border-left-width: 5px;
+  transform: translateX(3px);
+}
+
+.technique-item h5 {
+  font-family: var(--font-mono);
+  color: var(--accent-danger);
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.technique-item p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ============================================
+   DASHBOARD
+   ============================================ */
+.dashboard-container { max-width: 1300px; margin: 0 auto; }
+
+.dashboard-hero {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(123, 44, 255, 0.08));
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-primary);
+}
+
+.dashboard-hero h1 {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dashboard-hero p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card-dashboard {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.stat-card-dashboard:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-accent);
+}
+
+.stat-card-dashboard .stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-card-dashboard .stat-value {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.stat-card-dashboard .stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-card-dashboard::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -30%;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  opacity: 0.05;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 900px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
+.chart-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all var(--transition-base);
+}
+
+.chart-card:hover {
+  border-color: var(--border-accent);
+}
+
+.chart-title {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 1rem;
+}
+
+.chart-wrapper {
+  position: relative;
+  height: 250px;
+}
+
+/* Achievements */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.achievement-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  text-align: center;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.achievement-card.unlocked {
+  border-color: rgba(255, 184, 0, 0.4);
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.08), var(--bg-card));
+}
+
+.achievement-card.locked {
+  opacity: 0.5;
+  filter: grayscale(0.7);
+}
+
+.achievement-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.achievement-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.achievement-card.unlocked .achievement-icon {
+  filter: drop-shadow(0 0 10px rgba(255, 184, 0, 0.5));
+}
+
+.achievement-name {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.achievement-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.achievement-card.unlocked::before {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--accent-success);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ============================================
+   TOASTS
+   ============================================ */
+.toast-container {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  max-width: 380px;
+}
+
+.toast {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: var(--shadow-lg);
+  animation: slideInRight 0.4s ease, fadeOut 0.4s ease 3.6s forwards;
+  min-width: 280px;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(120%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { transform: translateX(120%); opacity: 0; }
+}
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.toast.success { border-left: 3px solid var(--accent-success); }
+.toast.success .toast-icon { background: rgba(0, 255, 136, 0.15); color: var(--accent-success); }
+
+.toast.error { border-left: 3px solid var(--accent-danger); }
+.toast.error .toast-icon { background: rgba(255, 51, 102, 0.15); color: var(--accent-danger); }
+
+.toast.warning { border-left: 3px solid var(--accent-warning); }
+.toast.warning .toast-icon { background: rgba(255, 184, 0, 0.15); color: var(--accent-warning); }
+
+.toast.info { border-left: 3px solid var(--accent-info); }
+.toast.info .toast-icon { background: rgba(0, 212, 255, 0.15); color: var(--accent-info); }
+
+.toast.achievement { 
+  border-left: 3px solid var(--accent-warning);
+  background: linear-gradient(135deg, rgba(255, 184, 0, 0.1), var(--bg-card));
+}
+.toast.achievement .toast-icon { 
+  background: rgba(255, 184, 0, 0.2); 
+  color: var(--accent-warning);
+  animation: bounce 1s ease;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.toast-content { flex: 1; }
+
+.toast-title {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.1rem;
+}
+
+.toast-message {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .header { padding: 0.75rem 1rem; }
+  .logo-title { font-size: 0.95rem; }
+  .logo-subtitle { font-size: 0.6rem; }
+  .status-indicator { display: none; }
+  .main-content { padding: 1rem; }
+  .tabs-wrapper { padding: 0 1rem; }
+  .tabs { padding: 3px; }
+  .tab-btn { padding: 0.5rem 0.85rem; font-size: 0.78rem; }
+  .tab-btn .tab-label { display: none; }
+  .tab-btn .tab-icon { font-size: 1.1rem; }
+  .timeline-horizontal { flex-direction: column; }
+  .timeline-step { flex-direction: row; justify-content: flex-start; gap: 0.75rem; text-align: left; min-width: auto; padding: 0.5rem 0; }
+  .timeline-step::after { display: none; }
+  .step-icon { margin-bottom: 0; }
+  .checklist { grid-template-columns: 1fr; }
+  .dashboard-hero { padding: 1.5rem; }
+  .dashboard-hero h1 { font-size: 1.3rem; }
+}
+
+@media (max-width: 480px) {
+  .logo-text-group { display: none; }
+  .card { padding: 1.25rem; }
+  .section-title { font-size: 0.95rem; }
+}
+
+/* Utility animations */
+.fade-in { animation: fadeInUp 0.5s ease; }
+
+/* Hide scrollbar for tabs on mobile */
+@media (max-width: 600px) {
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs { scrollbar-width: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Particle background -->
+<canvas id="particles-canvas"></canvas>
+
+<!-- Loading screen -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-logo">
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+      <defs>
+        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#00d9ff"/>
+          <stop offset="50%" stop-color="#0077ff"/>
+          <stop offset="100%" stop-color="#7b2cff"/>
+        </linearGradient>
+      </defs>
+      <path d="M40 5 L70 20 L70 45 C70 60 55 72 40 78 C25 72 10 60 10 45 L10 20 Z" stroke="url(#logoGrad)" stroke-width="2.5" fill="none"/>
+      <circle cx="40" cy="38" r="10" stroke="url(#logoGrad)" stroke-width="2" fill="none"/>
+      <circle cx="40" cy="38" r="4" fill="url(#logoGrad)"/>
+      <path d="M30 38 L22 38 M50 38 L58 38 M40 28 L40 20 M40 48 L40 56" stroke="url(#logoGrad)" stroke-width="1.5" opacity="0.6"/>
+    </svg>
+  </div>
+  <div class="loading-spinner"></div>
+  <div class="loading-text">INICIALIZANDO SENTINEL MAIL...</div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-content">
+    <div class="logo" onclick="switchTab('dashboard')">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2 L20 7 L20 13 C20 17.5 16 21 12 22 C8 21 4 17.5 4 13 L4 7 Z"/>
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 9 L12 5 M12 15 L12 19 M9 12 L5 12 M15 12 L19 12"/>
+        </svg>
+      </div>
+      <div class="logo-text-group">
+        <div class="logo-title">SENTINEL MAIL</div>
+        <div class="logo-subtitle">VIGILÂNCIA INTELIGENTE</div>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span>SISTEMA ATIVO</span>
+      </div>
+      
+      <div class="theme-toggle">
+        <button class="theme-btn" data-theme="light" title="Modo Claro">☀️</button>
+        <button class="theme-btn active" data-theme="dark" title="Modo Escuro">🌙</button>
+        <button class="theme-btn" data-theme="auto" title="Automático">⚡</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Tabs -->
+<div class="tabs-wrapper">
+  <div class="tabs">
+    <button class="tab-btn" data-tab="dashboard">
+      <span class="tab-icon">📊</span><span class="tab-label">Dashboard</span>
+    </button>
+    <button class="tab-btn active" data-tab="learn">
+      <span class="tab-icon">📚</span><span class="tab-label">Aprender</span>
+    </button>
+    <button class="tab-btn" data-tab="analyze">
+      <span class="tab-icon">🔍</span><span class="tab-label">Analisar</span>
+    </button>
+    <button class="tab-btn" data-tab="investigator">
+      <span class="tab-icon">🕵️</span><span class="tab-label">Investigador</span>
+    </button>
+    <button class="tab-btn" data-tab="quiz">
+      <span class="tab-icon">🎯</span><span class="tab-label">Quiz</span>
+    </button>
+    <button class="tab-btn" data-tab="professor">
+      <span class="tab-icon">🎓</span><span class="tab-label">Professor</span>
+    </button>
+    <button class="tab-btn" data-tab="generator">
+      <span class="tab-icon">⚗️</span><span class="tab-label">Gerador</span>
+    </button>
+  </div>
+</div>
+
+<!-- Main Content -->
+<main class="main-content">
+
+  <!-- ========== DASHBOARD TAB ========== -->
+  <div class="tab-content" id="tab-dashboard">
+    <div class="dashboard-container">
+      <div class="dashboard-hero">
+        <h1>⚡ PAINEL DE OPERAÇÕES</h1>
+        <p>Acompanhe seu progresso, conquistas e estatísticas em tempo real</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card-dashboard">
+          <div class="stat-icon" style="background: rgba(0, 217, 255, 0.15); color: var(--accent-primary);">📧</div>
+          <div class="stat-value" id="stat-analyses">0</div>
+          <div class="stat-label">E-mails Analisados</div>
+        </div>
+        <div class="stat-card-dashboard">
+          <div class="stat-icon" style="background: rgba(255, 51, 102, 0.15); color: var(--accent-danger);">⚠️</div>
+          <div class="stat-value" id="stat-threats">0</div>
+          <div class="stat-label">Golpes Detectados</div>
+        </div>
+        <div class="stat-card-dashboard">
+          <div class="stat-icon" style="background: rgba(0, 255, 136, 0.15); color: var(--accent-success);">🎯</div>
+          <div class="stat-value" id="stat-quizzes">0</div>
+          <div class="stat-label">Quizzes Concluídos</div>
+        </div>
+        <div class="stat-card-dashboard">
+          <div class="stat-icon" style="background: rgba(255, 184, 0, 0.15); color: var(--accent-warning);">🏆</div>
+          <div class="stat-value" id="stat-avg-score">0%</div>
+          <div class="stat-label">Pontuação Média</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">📈 Análises dos Últimos 7 Dias</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-analyses"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🎯 Tipos de Ameaça Detectadas</div>
+          <div class="chart-wrapper">
+            <canvas id="chart-threats"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2 class="section-title">
+          <span class="title-icon">🏅</span>
+          Conquistas
+        </h2>
+        <div class="achievements-grid" id="achievementsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== LEARN TAB ========== -->
+  <div class="tab-content active" id="tab-learn">
+    
+    <section class="section">
+      <h2 class="section-title">
+        <span class="title-icon">🎯</span>
+        O que é phishing?
+      </h2>
+      <div class="card">
+        <p>
+          <span class="highlight">Phishing</span> é um tipo de ataque cibernético onde criminosos se passam 
+          por empresas, instituições ou pessoas confiáveis para <span class="highlight-warning">enganar você</span> 
+          e roubar informações sensíveis — como senhas, números de cartão, CPF ou códigos de acesso.
+        </p>
+        <p>
+          O ataque geralmente chega por <span class="highlight-purple">e-mail</span>, mas também pode ocorrer via 
+          SMS (smishing), WhatsApp, redes sociais ou até chamadas telefônicas (vishing).
+        </p>
+        <div class="analogy-box">
+          <span class="icon">🎣</span>
+          <p>
+            <strong>Analogia:</strong> Pense como uma "pescaria digital" — o criminoso joga a isca (e-mail falso), 
+            espera a vítima morder (clicar), e então puxa a linha (rouba os dados).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">
+        <span class="title-icon">⏱️</span>
+        Como o ataque acontece?
+      </h2>
+      <div class="card">
+        <p>O phishing segue um fluxo previsível. Conhecer as etapas ajuda você a identificar o ataque cedo:</p>
+        <div class="timeline-horizontal">
+          <div class="timeline-step">
+            <div class="step-icon">🎣</div>
+            <div class="step-title">Isca</div>
+            <div class="step-desc">E-mail enganoso enviado</div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-icon">🖱️</div>
+            <div class="step-title">Clique</div>
+            <div class="step-desc">Vítima interage</div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-icon">🌐</div>
+            <div class="step-title">Site Falso</div>
+            <div class="step-desc">Página clonada</div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-icon">🔑</div>
+            <div class="step-title">Dados</div>
+            <div class="step-desc">Roubo de credenciais</div>
+          </div>
+          <div class="timeline-step">
+            <div class="step-icon">💀</div>
+            <div class="step-title">Fraude</div>
+            <div class="step-desc">Prejuízo financeiro</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">
+        <span class="title-icon">⚠️</span>
+        Sinais de alerta
+      </h2>
+      <div class="signs-grid">
+        <div class="sign-item">
+          <span class="sign-icon">📧</span>
+          <div>
+            <h4>Remetente disfarçado</h4>
+            <p>O nome parece legítimo, mas o endereço de e-mail é estranho ou usa domínio diferente.</p>
+          </div>
+        </div>
+        <div class="sign-item">
+          <span class="sign-icon">⏰</span>
+          <div>
+            <h4>Urgência artificial</h4>
+            <p>"Sua conta será bloqueada em 24h!" — pressão para agir sem pensar.</p>
+          </div>
+        </div>
+        <div class="sign-item">
+          <span class="sign-icon">🔗</span>
+          <div>
+            <h4>Links suspeitos</h4>
+            <p>URLs encurtadas, com IP numérico, domínio estranho ou erros de grafia.</p>
+          </div>
+        </div>
+        <div class="sign-item">
+          <span class="sign-icon">✏️</span>
+          <div>
+            <h4>Erros de português</h4>
+            <p>Gramática ruim, ortografia inconsistente ou linguagem pouco profissional.</p>
+          </div>
+        </div>
+        <div class="sign-item">
+          <span class="sign-icon">📎</span>
+          <div>
+            <h4>Anexos perigosos</h4>
+            <p>Arquivos .exe, .scr, .zip ou documentos com macros habilitadas.</p>
+          </div>
+        </div>
+        <div class="sign-item">
+          <span class="sign-icon">👤</span>
+          <div>
+            <h4>Saudações genéricas</h4>
+            <p>"Prezado cliente" em vez de usar seu nome real — sinal de envio em massa.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">
+        <span class="title-icon">🛡️</span>
+        Como se prevenir
+      </h2>
+      <div class="card">
+        <ul class="checklist">
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Verifique o remetente</strong> — Clique no nome do remetente e veja o endereço completo.</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Passe o mouse sobre links</strong> — Veja para onde o link realmente aponta antes de clicar.</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Ative 2FA</strong> — Mesmo que roubem sua senha, sem o segundo fator o acesso é bloqueado.</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Nunca informe senhas por e-mail</strong> — Nenhuma empresa legítima pede senha por e-mail.</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Desconfie de urgência</strong> — Se o e-mail tenta te pressionar, é provavelmente golpe.</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span><strong>Confirme por outro canal</strong> — Acesse o site oficial ou ligue para a empresa.</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">
+        <span class="title-icon">🔬</span>
+        Exemplo comparativo
+      </h2>
+      <div class="comparison-container">
+        <div class="email-example legitimate">
+          <div class="email-header">✓ E-mail legítimo</div>
+          <div class="email-body">
+            <div class="field"><span class="field-label">De:</span><span class="field-value">banco@<strong>itau.com.br</strong></span></div>
+            <div class="field"><span class="field-label">Para:</span><span class="field-value">joao.silva@email.com</span></div>
+            <div class="field"><span class="field-label">Assunto:</span><span class="field-value">Seu extrato mensal está disponível</span></div>
+            <div class="message">
+              Olá, <strong>João</strong>,<br><br>
+              Seu extrato do mês de julho está disponível no app ou no internet banking. 
+              Para acessá-lo, abra o aplicativo Itaú ou digite <strong>itau.com.br</strong> no seu navegador.<br><br>
+              Atenciosamente,<br>Equipe Itaú
+            </div>
+          </div>
+        </div>
+        <div class="email-example phishing">
+          <div class="email-header">✗ E-mail phishing</div>
+          <div class="email-body">
+            <div class="field"><span class="field-label">De:</span><span class="field-value">Itau <span class="suspicious">atendimento@itau-seguranca.xyz</span></span></div>
+            <div class="field"><span class="field-label">Para:</span><span class="field-value">joao.silva@email.com</span></div>
+            <div class="field"><span class="field-label">Assunto:</span><span class="field-value"><span class="suspicious">ÚLTIMO AVISO: Sua conta será bloqueada</span></span></div>
+            <div class="message">
+              <span class="suspicious">Prezado cliente</span>,<br><br>
+              Detectamos uma atividade suspeita. <span class="suspicious">Em 24 horas</span> sua conta será <span class="suspicious">bloqueada permanentemente</span>.<br><br>
+              Para evitar o bloqueio, <span class="suspicious">clique agora</span>:<br>
+              🔗 <span class="suspicious">http://198.51.100.23/itau/verificar</span><br><br>
+              Informe seu <span class="suspicious">CPF, senha e token</span> para regularizar.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ========== ANALYZE TAB ========== -->
+  <div class="tab-content" id="tab-analyze">
+    <div class="analyze-container">
+      <section class="section">
+        <h2 class="section-title">
+          <span class="title-icon">🔍</span>
+          Analisador Heurístico de E-mail
+        </h2>
+        <div class="card">
+          <p>Cole abaixo o conteúdo do e-mail suspeito (remetente, assunto e corpo) para análise:</p>
+          
+          <div class="sample-buttons">
+            <button class="sample-btn" onclick="Analyzer.loadSample('phishing')">📋 Phishing óbvio</button>
+            <button class="sample-btn" onclick="Analyzer.loadSample('legit')">✓ Legítimo</button>
+            <button class="sample-btn" onclick="Analyzer.loadSample('medium')">⚠ Suspeito</button>
+            <button class="sample-btn" onclick="Analyzer.loadSample('sophisticated')">🎭 Phishing sofisticado</button>
+          </div>
+
+          <textarea class="email-textarea" id="emailInput" placeholder="Cole aqui o conteúdo do e-mail suspeito...
+
+Exemplo:
+De: suporte@banco-seguro.xyz
+Assunto: URGENTE - Conta bloqueada
+
+Prezado cliente,
+Sua conta será bloqueada em 24 horas..."></textarea>
+
+          <button class="btn-scan" id="btnScan" onclick="Analyzer.runScan()">
+            ⚡ EXECUTAR VARREDURA HEURÍSTICA
+          </button>
+        </div>
+
+        <div class="terminal-output" id="terminalOutput"></div>
+
+        <div class="results-container" id="resultsContainer">
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-card-title">📊 Medidor de Risco</div>
+              <div class="meter-container">
+                <div class="meter-wrapper">
+                  <div class="meter-bg"></div>
+                  <div class="meter-needle" id="meterNeedle"></div>
+                </div>
+                <div class="meter-value" id="meterValue">0</div>
+                <div class="meter-label">Pontuação de Risco</div>
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div class="result-card-title">⚖️ Veredito</div>
+              <div style="text-align: center; padding: 1rem;">
+                <span class="verdict-badge" id="verdictBadge">—</span>
+              </div>
+              <div id="verdictDescription" style="text-align: center; margin-top: 1rem; font-size: 0.88rem; color: var(--text-secondary); padding: 0 1rem;"></div>
+            </div>
+
+            <div class="result-card full-width">
+              <div class="result-card-title">🔎 Sinais Detectados</div>
+              <ul class="signals-list" id="signalsList">
+                <li style="color: var(--text-muted); text-align: center; padding: 1rem;">Nenhum sinal detectado.</li>
+              </ul>
+            </div>
+
+            <div class="result-card full-width">
+              <div class="result-card-title">💡 Recomendações</div>
+              <ul class="recommendations" id="recommendationsList"></ul>
+            </div>
+          </div>
+
+          <div class="disclaimer">
+            <span class="icon">⚠️</span>
+            <p>
+              <strong>Aviso:</strong> Esta ferramenta realiza análise heurística educativa baseada em padrões comuns. 
+              Ela <strong>não substitui</strong> antivírus, filtros profissionais ou ferramentas oficiais de segurança. 
+              Em caso de dúvida, consulte a equipe de TI.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ========== INVESTIGATOR TAB ========== -->
+  <div class="tab-content" id="tab-investigator">
+    <div class="investigator-container">
+      <section class="section">
+        <h2 class="section-title">
+          <span class="title-icon">🕵️</span>
+          Modo Investigador
+        </h2>
+        <div class="card">
+          <p>Cole um e-mail suspeito e assista à investigação forense passo a passo, em tempo real:</p>
+          
+          <textarea class="email-textarea" id="investigatorInput" placeholder="Cole o e-mail completo para investigação detalhada..." style="margin-top: 1rem;"></textarea>
+          
+          <button class="btn-scan" onclick="Investigator.start()">
+            🔎 INICIAR INVESTIGAÇÃO FORENSE
+          </button>
+        </div>
+
+        <div class="investigation-steps" id="investigationSteps"></div>
+
+        <div class="results-container" id="investigatorResults">
+          <div class="results-grid">
+            <div class="result-card">
+              <div class="result-card-title">📊 Pontuação Final</div>
+              <div class="meter-container">
+                <div class="meter-wrapper">
+                  <div class="meter-bg"></div>
+                  <div class="meter-needle" id="invMeterNeedle"></div>
+                </div>
+                <div class="meter-value" id="invMeterValue">0</div>
+                <div class="meter-label">Risco</div>
+              </div>
+            </div>
+
+            <div class="result-card">
+              <div class="result-card-title">📈 Probabilidade</div>
+              <div style="text-align: center; padding: 2rem 1rem;">
+                <div id="invProbability" style="font-family: var(--font-mono); font-size: 3rem; font-weight: 700; color: var(--accent-primary);">0%</div>
+                <div style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">chance de ser phishing</div>
+                <div id="invVerdict" style="margin-top: 1.5rem;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ========== QUIZ TAB ========== -->
+  <div class="tab-content" id="tab-quiz">
+    <div class="quiz-container">
+      <div id="quizStart" class="quiz-start-screen card">
+        <h2>🎯 Você cairia nesse golpe?</h2>
+        <p>Teste sua capacidade de identificar e-mails maliciosos. 10 desafios reais vão testar seus conhecimentos!</p>
+        
+        <div class="quiz-stats-preview">
+          <div class="stat-card">
+            <span class="value">10</span>
+            <span class="label">Desafios</span>
+          </div>
+          <div class="stat-card">
+            <span class="value">🏆</span>
+            <span class="label">3 Níveis</span>
+          </div>
+          <div class="stat-card">
+            <span class="value">📈</span>
+            <span class="label">Progresso</span>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="Quiz.start()">
+          🚀 Iniciar Desafio
+        </button>
+      </div>
+
+      <div id="quizGame" style="display: none;">
+        <div class="quiz-progress-wrapper">
+          <div class="quiz-progress-header">
+            <span class="quiz-progress-label" id="quizProgressLabel">Questão 1 de 10</span>
+            <span class="quiz-progress-label" id="quizScore">0 acertos</span>
+          </div>
+          <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" id="quizProgressFill"></div>
+          </div>
+        </div>
+
+        <div id="quizQuestionContainer"></div>
+      </div>
+
+      <div id="quizResult" class="quiz-result-screen card" style="display: none;"></div>
+    </div>
+  </div>
+
+  <!-- ========== PROFESSOR TAB ========== -->
+  <div class="tab-content" id="tab-professor">
+    <div class="professor-container">
+      <section class="section">
+        <h2 class="section-title">
+          <span class="title-icon">🎓</span>
+          Modo Professor
+        </h2>
+        <div class="card" style="margin-bottom: 1.5rem;">
+          <p>Ideal para salas de aula e treinamentos. Mostre o e-mail primeiro, depois revele a análise para discutir com os alunos.</p>
+        </div>
+
+        <div class="professor-counter" id="profCounter">Exemplo 1 de 6</div>
+
+        <div class="professor-controls">
+          <button class="btn-secondary" onclick="Professor.prev()">← Anterior</button>
+          <button class="btn-primary" onclick="Professor.reveal()">👁️ Revelar Análise</button>
+          <button class="btn-secondary" onclick="Professor.next()">Próximo →</button>
+        </div>
+
+        <div class="professor-example-card">
+          <div class="professor-email-view" id="profEmail"></div>
+          <div class="professor-analysis" id="profAnalysis"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ========== GENERATOR TAB ========== -->
+  <div class="tab-content" id="tab-generator">
+    <div class="generator-container">
+      <section class="section">
+        <h2 class="section-title">
+          <span class="title-icon">⚗️</span>
+          Gerador Educativo de Phishing
+        </h2>
+        <div class="card">
+          <p>Selecione uma marca para gerar um <strong>e-mail fictício educativo</strong> que demonstra técnicas comuns de phishing usadas por criminosos. <span class="highlight-danger">Apenas para fins de estudo.</span></p>
+          
+          <div class="generator-brands" id="generatorBrands"></div>
+
+          <button class="btn-scan" id="btnGenerate" onclick="Generator.generate()">
+            ⚗️ GERAR EXEMPLO EDUCATIVO
+          </button>
+        </div>
+
+        <div class="generated-email-wrapper" id="generatedEmailWrapper">
+          <div class="generated-email">
+            <div class="email-header" style="background: rgba(255, 51, 102, 0.1); color: var(--accent-danger); padding: 1rem 1.5rem; font-family: var(--font-mono); font-size: 0.8rem;">
+              ⚠ EXEMPLO FICTÍCIO — APENAS PARA ESTUDO
+            </div>
+            <div class="generated-email-body" id="generatedEmailBody"></div>
+          </div>
+
+          <div class="section" style="margin-top: 2rem;">
+            <h3 class="section-title">
+              <span class="title-icon">🔍</span>
+              Técnicas utilizadas neste exemplo
+            </h3>
+            <div class="techniques-list" id="techniquesList"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+</main>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Footer -->
+<footer class="footer" style="text-align: center; padding: 2rem; color: var(--text-muted); font-family: var(--font-mono); font-size: 0.75rem; border-top: 1px solid var(--border-color); margin-top: 3rem; position: relative; z-index: 1;">
+  <p>SENTINEL MAIL v2.0 // Plataforma Educativa de Cibersegurança</p>
+  <p style="margin-top: 0.5rem;">🔒 100% client-side — nenhum dado é enviado a servidores externos.</p>
+</footer>
+
+<script>
+/* ============================================
+   STORAGE MODULE - Persistence
+   ============================================ */
+const Storage = {
+  keys: {
+    theme: 'sentinel_theme',
+    stats: 'sentinel_stats',
+    achievements: 'sentinel_achievements',
+    quizHistory: 'sentinel_quiz_history',
+    analysisHistory: 'sentinel_analysis_history'
+  },
+
+  get(key, defaultValue = null) {
+    try {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : defaultValue;
+    } catch (e) {
+      return defaultValue;
+    }
+  },
+
+  set(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      console.warn('Storage error:', e);
+    }
+  },
+
+  getDefaultStats() {
+    return {
+      analyses: 0,
+      threats: 0,
+      quizzes: 0,
+      quizCorrect: 0,
+      quizTotal: 0,
+      avgScore: 0,
+      last7Days: [0, 0, 0, 0, 0, 0, 0],
+      threatTypes: { urgency: 0, links: 0, sensitive: 0, structure: 0 }
+    };
+  },
+
+  incrementStat(field, amount = 1) {
+    const stats = this.get(this.keys.stats, this.getDefaultStats());
+    stats[field] = (stats[field] || 0) + amount;
+    this.set(this.keys.stats, stats);
+    return stats;
+  },
+
+  recordAnalysis(isThreat, threatCategories = []) {
+    const stats = this.get(this.keys.stats, this.getDefaultStats());
+    stats.analyses = (stats.analyses || 0) + 1;
+    if (isThreat) stats.threats = (stats.threats || 0) + 1;
+    
+    // Update last 7 days
+    const today = new Date().getDay();
+    if (!Array.isArray(stats.last7Days)) stats.last7Days = [0,0,0,0,0,0,0];
+    stats.last7Days[today] = (stats.last7Days[today] || 0) + 1;
+    
+    // Update threat types
+    if (!stats.threatTypes) stats.threatTypes = { urgency: 0, links: 0, sensitive: 0, structure: 0 };
+    threatCategories.forEach(cat => {
+      if (stats.threatTypes[cat] !== undefined) stats.threatTypes[cat]++;
+    });
+    
+    this.set(this.keys.stats, stats);
+    return stats;
+  },
+
+  recordQuiz(correct, total) {
+    const stats = this.get(this.keys.stats, this.getDefaultStats());
+    stats.quizzes = (stats.quizzes || 0) + 1;
+    stats.quizCorrect = (stats.quizCorrect || 0) + correct;
+    stats.quizTotal = (stats.quizTotal || 0) + total;
+    stats.avgScore = Math.round((stats.quizCorrect / stats.quizTotal) * 100);
+    this.set(this.keys.stats, stats);
+    return stats;
+  }
+};
+
+/* ============================================
+   TOAST MODULE - Notifications
+   ============================================ */
+const Toast = {
+  show(type, title, message, duration = 4000) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const icons = {
+      success: '✓',
+      error: '✕',
+      warning: '⚠',
+      info: 'ℹ',
+      achievement: '🏆'
+    };
+    
+    toast.innerHTML = `
+      <div class="toast-icon">${icons[type] || 'ℹ'}</div>
+      <div class="toast-content">
+        <div class="toast-title">${title}</div>
+        <div class="toast-message">${message}</div>
+      </div>
+    `;
+    
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), duration);
+  }
+};
+
+/* ============================================
+   ACHIEVEMENTS MODULE
+   ============================================ */
+const Achievements = {
+  definitions: [
+    { id: 'first_quiz', name: 'Primeiro Passo', desc: 'Concluiu seu primeiro quiz', icon: '🎯', condition: s => s.quizzes >= 1 },
+    { id: 'analyst_10', name: 'Analista Júnior', desc: 'Analisou 10 e-mails', icon: '🔍', condition: s => s.analyses >= 10 },
+    { id: 'analyst_50', name: 'Analista Sênior', desc: 'Analisou 50 e-mails', icon: '🕵️', condition: s => s.analyses >= 50 },
+    { id: 'detective', name: 'Detetive Digital', desc: 'Detectou 25 golpes', icon: '🔦', condition: s => s.threats >= 25 },
+    { id: 'hunter', name: 'Caçador de Golpes', desc: 'Detectou 100 golpes', icon: '🏹', condition: s => s.threats >= 100 },
+    { id: 'expert', name: 'Especialista', desc: 'Acertou 80%+ no quiz', icon: '🏆', condition: s => s.avgScore >= 80 && s.quizzes >= 3 },
+    { id: 'master', name: 'Mestre em Segurança', desc: 'Concluiu 10 quizzes', icon: '👑', condition: s => s.quizzes >= 10 },
+    { id: 'perfect', name: 'Perfeição', desc: 'Quiz com 100% de acerto', icon: '⭐', condition: s => s._lastPerfect === true }
+  ],
+
+  check(stats) {
+    const unlocked = Storage.get(Storage.keys.achievements, []);
+    let newUnlocks = [];
+    
+    this.definitions.forEach(def => {
+      if (!unlocked.includes(def.id) && def.condition(stats)) {
+        unlocked.push(def.id);
+        newUnlocks.push(def);
+      }
+    });
+    
+    if (newUnlocks.length > 0) {
+      Storage.set(Storage.keys.achievements, unlocked);
+      newUnlocks.forEach(ach => {
+        Toast.show('achievement', 'Conquista Desbloqueada!', `${ach.icon} ${ach.name}`);
+        if (typeof confetti !== 'undefined') {
+          confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+        }
+      });
+    }
+    
+    return unlocked;
+  },
+
+  render() {
+    const grid = document.getElementById('achievementsGrid');
+    if (!grid) return;
+    const unlocked = Storage.get(Storage.keys.achievements, []);
+    
+    grid.innerHTML = this.definitions.map(def => {
+      const isUnlocked = unlocked.includes(def.id);
+      return `
+        <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}">
+          <span class="achievement-icon">${def.icon}</span>
+          <div class="achievement-name">${def.name}</div>
+          <div class="achievement-desc">${def.desc}</div>
+        </div>
+      `;
+    }).join('');
+  }
+};
+
+/* ============================================
+   THEME MODULE
+   ============================================ */
+const Theme = {
+  init() {
+    const saved = Storage.get(Storage.keys.theme, 'dark');
+    this.apply(saved);
+    
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.addEventListener('click', () => this.apply(btn.dataset.theme));
+    });
+    
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if (Storage.get(Storage.keys.theme) === 'auto') this.apply('auto');
+    });
+  },
+
+  apply(theme) {
+    let effectiveTheme = theme;
+    if (theme === 'auto') {
+      effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    
+    document.documentElement.setAttribute('data-theme', effectiveTheme);
+    Storage.set(Storage.keys.theme, theme);
+    
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.theme === theme);
+    });
+    
+    // Re-render charts with new colors
+    if (Dashboard.chartsInitialized) Dashboard.updateCharts();
+  }
+};
+
+/* ============================================
+   PARTICLES BACKGROUND
+   ============================================ */
+const Particles = {
+  canvas: null,
+  ctx: null,
+  particles: [],
+  running: true,
+
+  init() {
+    this.canvas = document.getElementById('particles-canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.resize();
+    this.create();
+    this.animate();
+    
+    window.addEventListener('resize', () => this.resize());
+  },
+
+  resize() {
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight;
+  },
+
+  create() {
+    this.particles = [];
+    const count = Math.min(50, Math.floor(window.innerWidth / 25));
+    for (let i = 0; i < count; i++) {
+      this.particles.push({
+        x: Math.random() * this.canvas.width,
+        y: Math.random() * this.canvas.height,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.5) * 0.3,
+        r: Math.random() * 1.5 + 0.5
+      });
+    }
+  },
+
+  animate() {
+    if (!this.running) return;
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    const color = isLight ? '0, 119, 255' : '0, 217, 255';
+    
+    this.particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+      
+      this.ctx.beginPath();
+      this.ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      this.ctx.fillStyle = `rgba(${color}, 0.6)`;
+      this.ctx.fill();
+    });
+    
+    // Connect nearby particles
+    for (let i = 0; i < this.particles.length; i++) {
+      for (let j = i + 1; j < this.particles.length; j++) {
+        const dx = this.particles[i].x - this.particles[j].x;
+        const dy = this.particles[i].y - this.particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          this.ctx.beginPath();
+          this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
+          this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+          this.ctx.strokeStyle = `rgba(${color}, ${0.15 * (1 - dist / 120)})`;
+          this.ctx.lineWidth = 0.5;
+          this.ctx.stroke();
+        }
+      }
+    }
+    
+    requestAnimationFrame(() => this.animate());
+  }
+};
+
+/* ============================================
+   HEURISTICS MODULE - Enhanced Analysis Engine
+   ============================================ */
+const Heuristics = {
+  rules: {
+    urgency: [
+      { pattern: /urgente[s]?/gi, name: "Palavra de urgência", desc: "Uso de 'urgente' para pressionar decisão rápida.", severity: "medium", score: 8 },
+      { pattern: /conta\s+(bloqueada|suspensa|cancelada)/gi, name: "Ameaça de bloqueio", desc: "Ameaça de bloqueio/suspensão de conta.", severity: "high", score: 15 },
+      { pattern: /último\s+aviso/gi, name: "Último aviso", desc: "Expressão de 'último aviso' indica pressão extrema.", severity: "high", score: 14 },
+      { pattern: /em\s+(24|48|12)\s*(horas|h|hrs)/gi, name: "Prazo artificial", desc: "Prazo curto artificial para criar sentido de urgência.", severity: "high", score: 12 },
+      { pattern: /clique\s+agora/gi, name: "Imperativo de ação", desc: "'Clique agora' — tentativa de ação sem reflexão.", severity: "medium", score: 10 },
+      { pattern: /atualize\s+(seus\s+)?dados/gi, name: "Pedido de atualização", desc: "Solicitação de atualização de dados cadastrais.", severity: "medium", score: 8 },
+      { pattern: /regularize/gi, name: "Regularização exigida", desc: "Exigência de 'regularizar' situação — tática de medo.", severity: "medium", score: 8 },
+      { pattern: /bloqueada\s+permanentemente/gi, name: "Ameaça permanente", desc: "Ameaça de bloqueio permanente para causar pânico.", severity: "high", score: 15 },
+      { pattern: /atividade\s+suspeita/gi, name: "Alerta falso", desc: "Suposta 'atividade suspeita' para justificar urgência.", severity: "medium", score: 8 },
+      { pattern: /n[aã]o\s+responda/gi, name: "Impedir resposta", desc: "'Não responda este e-mail' — evita questionamento.", severity: "low", score: 5 },
+      { pattern: /confirma[çc][aã]o\s+imediata/gi, name: "Confirmação imediata", desc: "Pressão por confirmação imediata.", severity: "medium", score: 8 },
+      { pattern: /a[cç][aã]o\s+imediata/gi, name: "Ação imediata", desc: "Requer ação imediata — tática comum em phishing.", severity: "high", score: 12 }
+    ],
+    sensitive: [
+      { pattern: /\bsenha\b/gi, name: "Solicitação de senha", desc: "Pedido de senha — NENHUMA empresa legítima faz isso.", severity: "high", score: 18 },
+      { pattern: /\bcpf\b/gi, name: "Solicitação de CPF", desc: "Pedido de CPF por e-mail é altamente suspeito.", severity: "high", score: 15 },
+      { pattern: /(cart[aã]o|cvv|validade\s+do\s+cart)/gi, name: "Dados de cartão", desc: "Solicitação de dados de cartão de crédito.", severity: "high", score: 18 },
+      { pattern: /(c[oó]digo\s+)?(pix|token)/gi, name: "Token/código PIX", desc: "Solicitação de código PIX ou token de segurança.", severity: "high", score: 16 },
+      { pattern: /(dados\s+(banc[áa]rios|cadastrais)|informa[çc][oõ]es\s+pessoais)/gi, name: "Dados pessoais", desc: "Solicitação genérica de dados pessoais/bancários.", severity: "high", score: 14 },
+      { pattern: /(c[oó]digo\s+de\s+seguran[çc]a|c[oó]digo\s+de\s+verifica[çc][aã]o)/gi, name: "Código de segurança", desc: "Solicitação de código de segurança/verificação.", severity: "high", score: 14 },
+      { pattern: /n[uú]mero\s+do\s+cart[aã]o/gi, name: "Número do cartão", desc: "Pedido explícito do número do cartão.", severity: "high", score: 18 }
+    ],
+    links: [
+      { pattern: /https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/gi, name: "URL com IP numérico", desc: "Link usando endereço IP — extremamente suspeito.", severity: "high", score: 20 },
+      { pattern: /http:\/\/(?!localhost)/gi, name: "Link HTTP inseguro", desc: "Uso de HTTP (sem criptografia) — sites legítimos usam HTTPS.", severity: "medium", score: 10 },
+      { pattern: /(bit\.ly|tinyurl\.com|t\.co|goo\.gl|is\.gd|cutt\.ly|ow\.ly|buff\.ly|shorturl|rebrand\.ly)/gi, name: "Encurtador de URL", desc: "Link encurtado oculta o destino real.", severity: "high", score: 15 },
+      { pattern: /https?:\/\/[^\s]*\.(xyz|top|club|click|tk|ml|ga|cf|gq|pw|cc|icu|buzz|cam|win|loan|bid|stream)/gi, name: "TLD suspeito", desc: "Domínio com extensão pouco usual, comum em golpes.", severity: "medium", score: 12 },
+      { pattern: /https?:\/\/[^\s]*-[^\s]*-[^\s]*\.(com|net|org|br)/gi, name: "Domínio com muitos hifens", desc: "Domínio com múltiplos hifens tentando imitar marca.", severity: "medium", score: 10 }
+    ],
+    structure: [
+      { pattern: /^(prezado\s+cliente|prezado\s+usu[áa]rio|caro\s+cliente|prezado\s+correntista)/gim, name: "Saudação genérica", desc: "'Prezado cliente' em vez de usar seu nome — envio em massa.", severity: "medium", score: 8 },
+      { pattern: /!\s*!\s*!/g, name: "Pontuação excessiva", desc: "Múltiplas exclamações — tentativa de criar alarme.", severity: "low", score: 4 },
+      { pattern: /[A-ZÁÉÍÓÚÂÊÔÃÕÇ]{10,}/g, name: "CAIXA ALTA excessiva", desc: "Trechos longos em maiúsculas — grito virtual.", severity: "medium", score: 6 },
+      { pattern: /(gr[aá]tis|pr[eê]mio|ganh(ou|e|o)|parab[eé]ns|sorteado|voc[eê]\s+foi\s+selecionado)/gi, name: "Promessa de ganho", desc: "Promessa de prêmio ou ganho fácil — isca clássica.", severity: "medium", score: 12 },
+      { pattern: /(promo[çc][aã]o\s+imperd[ií]vel|oferta\s+[uú]nica|s[oó]\s+hoje)/gi, name: "Promoção falsa", desc: "Promoção com urgência para atrair cliques.", severity: "medium", score: 8 },
+      { pattern: /(anexo|attachment).*\.(exe|scr|zip|bat|cmd|vbs|js)/gi, name: "Anexo suspeito", desc: "Anexo com extensão executável — risco de malware.", severity: "high", score: 20 },
+      { pattern: /(erre[oi]s|[óo]rtogr[áa]fia|gr[áa]matical)/gi, name: "Erros ortográficos", desc: "Erros de português em comunicação oficial.", severity: "low", score: 5 }
+    ]
+  },
+
+  analyze(text) {
+    const signals = [];
+    let totalScore = 0;
+    const categories = { urgency: 0, links: 0, sensitive: 0, structure: 0 };
+    
+    for (const [category, rules] of Object.entries(this.rules)) {
+      for (const rule of rules) {
+        const matches = text.match(rule.pattern);
+        if (matches) {
+          const score = rule.score * Math.min(matches.length, 3);
+          totalScore += score;
+          categories[category] += score;
+          signals.push({
+            name: rule.name,
+            desc: rule.desc,
+            severity: rule.severity,
+            count: matches.length,
+            score: score,
+            category: category,
+            icon: rule.severity === 'high' ? '🚨' : rule.severity === 'medium' ? '⚠️' : 'ℹ️'
+          });
+        }
+      }
+    }
+    
+    // Sender domain analysis
+    const fromMatch = text.match(/(?:from|de):\s*([^\n]*)/i);
+    if (fromMatch) {
+      const fromText = fromMatch[1].toLowerCase();
+      const brands = ['itau','itau','bradesco','santander','bb','caixa','nubank','paypal','amazon','netflix','mercado','shopee','instagram','whatsapp','receita','correios'];
+      const suspiciousTLDs = ['xyz','top','club','click','tk','ml','ga','cf','gq','pw','cc','icu'];
+      
+      const hasBrand = brands.some(b => fromText.includes(b));
+      const hasSuspiciousTLD = suspiciousTLDs.some(t => fromText.includes(`.${t}`));
+      const hasHyphenDomain = /@[a-z0-9-]+\.[a-z]/.test(fromText);
+      
+      if (hasBrand && (hasSuspiciousTLD || hasHyphenDomain)) {
+        totalScore += 20;
+        categories.structure += 20;
+        signals.push({
+          name: "Remetente com domínio suspeito",
+          desc: "O domínio do remetente mistura marca conhecida com sufixo incomum — tentativa de imitação.",
+          severity: "high",
+          count: 1,
+          score: 20,
+          category: "structure",
+          icon: "🚨"
+        });
+      }
+    }
+    
+    totalScore = Math.min(totalScore, 100);
+    
+    let verdict, verdictClass, verdictDesc;
+    if (totalScore >= 70) {
+      verdict = "ALTO RISCO DE PHISHING";
+      verdictClass = "danger";
+      verdictDesc = "Este e-mail apresenta múltiplos indicadores de phishing. NÃO interaja com ele.";
+    } else if (totalScore >= 40) {
+      verdict = "SUSPEITO";
+      verdictClass = "suspicious";
+      verdictDesc = "Este e-mail contém elementos suspeitos. Prossiga com cautela.";
+    } else if (totalScore >= 20) {
+      verdict = "ATENÇÃO";
+      verdictClass = "suspicious";
+      verdictDesc = "Alguns elementos merecem atenção. Verifique antes de agir.";
+    } else {
+      verdict = "PROVAVELMENTE LEGÍTIMO";
+      verdictClass = "legitimate";
+      verdictDesc = "Nenhum indicador forte de phishing detectado.";
+    }
+    
+    return {
+      score: totalScore,
+      signals,
+      categories,
+      verdict,
+      verdictClass,
+      verdictDesc,
+      probability: Math.min(95, totalScore)
+    };
+  },
+
+  generateRecommendations(signals) {
+    const recs = [];
+    const names = new Set(signals.map(s => s.name));
+    
+    if (signals.some(s => s.severity === 'high')) {
+      recs.push({ icon: "🚫", text: "NÃO clique em nenhum link e NÃO forneça dados pessoais." });
+    }
+    
+    if ([...names].some(n => n.includes("domínio") || n.includes("URL") || n.includes("Link") || n.includes("Encurtador"))) {
+      recs.push({ icon: "🌐", text: "Digite o endereço oficial diretamente no navegador, nunca clique em links recebidos." });
+    }
+    
+    if ([...names].some(n => n.includes("senha") || n.includes("CPF") || n.includes("cartão"))) {
+      recs.push({ icon: "🔐", text: "Nenhuma empresa legítima pede senha ou dados completos por e-mail." });
+    }
+    
+    if ([...names].some(n => n.includes("urgência") || n.includes("prazo") || n.includes("ameaça"))) {
+      recs.push({ icon: "🧘", text: "Respire e não aja por impulso. Empresas reais dão prazos razoáveis." });
+    }
+    
+    if ([...names].some(n => n.includes("Encurtador") || n.includes("IP"))) {
+      recs.push({ icon: "🔗", text: "Nunca clique em links encurtados ou com IPs numéricos." });
+    }
+    
+    if ([...names].some(n => n.includes("genérica"))) {
+      recs.push({ icon: "📧", text: "E-mails legítimos usam seu nome. Saudações genéricas indicam envio em massa." });
+    }
+    
+    recs.push({ icon: "📞", text: "Em dúvida, contate a empresa pelos canais oficiais (site ou telefone)." });
+    recs.push({ icon: "🛡️", text: "Se já clicou em algo suspeito, altere suas senhas e ative o 2FA." });
+    
+    return recs;
+  }
+};
+
+/* ============================================
+   ANALYZER MODULE - Original Analysis Tab
+   ============================================ */
+const Analyzer = {
+  samples: {
+    phishing: `De: Seguranca Itau <no-reply@itau-seguranca-2024.xyz>
+Para: cliente@email.com
+Assunto: ÚLTIMO AVISO - Sua conta será bloqueada em 24 horas!
+
+Prezado cliente,
+
+Detectamos uma atividade suspeita na sua conta bancária. Por motivos de segurança, sua conta será BLOQUEADA PERMANENTEMENTE em 24 horas se você não regularizar sua situação.
+
+Para evitar o bloqueio, CLIQUE AGORA no link abaixo e atualize seus dados cadastrais:
+
+http://192.168.1.100/itau/seguranca/verificar.php
+
+Você precisará informar:
+- CPF completo
+- Senha do internet banking
+- Token de segurança
+- Dados do cartão (número, validade, CVV)
+
+NÃO RESPONDA ESTE E-MAIL.`,
+
+    legit: `De: Newsletter Spotify <newsletter@spotify.com>
+Para: maria.santos@gmail.com
+Assunto: Seu resumo semanal está pronto!
+
+Olá, Maria!
+
+Aqui está o seu resumo musical da semana:
+
+🎵 Você ouviu 347 minutos de música
+🎧 Seus artistas mais tocados: Anavitória, Silva, Tiago Iorc
+
+Quer saber mais? Abra o app Spotify ou acesse spotify.com no seu navegador.
+
+Equipe Spotify 🎶`,
+
+    medium: `De: Mercado Livre <atendimento@mercadolivre-promocoes.com>
+Para: cliente@email.com
+Assunto: Seu pedido precisa de confirmação
+
+Olá,
+
+Identificamos que seu pedido #8834221 está com pendência de confirmação de endereço. Por favor, acesse o link abaixo para atualizar seus dados de entrega:
+
+http://bit.ly/3xMlConfirm
+
+Precisamos confirmar seu CPF para liberar o envio.
+
+Caso não confirme em 48 horas, o pedido poderá ser cancelado.`,
+
+    sophisticated: `De: Suporte Microsoft <security-alert@microsoft-support.com>
+Para: funcionario@empresa.com.br
+Assunto: Atividade incomum de entrada
+
+Prezado usuário,
+
+Detectamos uma tentativa de entrada em sua conta corporativa a partir de um dispositivo não reconhecido em São Paulo, Brasil.
+
+Se foi você, nenhuma ação é necessária. Caso não reconheça esta atividade, proteja sua conta imediatamente acessando o portal de segurança:
+
+https://microsoft-support.com/verify-account?id=8823
+
+Atenciosamente,
+Equipe de Segurança Microsoft`
+  },
+
+  loadSample(type) {
+    document.getElementById('emailInput').value = this.samples[type] || '';
+  },
+
+  async runScan() {
+    const input = document.getElementById('emailInput').value.trim();
+    if (!input) {
+      Toast.show('warning', 'Aviso', 'Cole o conteúdo do e-mail para análise.');
+      return;
+    }
+
+    const btn = document.getElementById('btnScan');
+    btn.disabled = true;
+    btn.innerHTML = '⏳ EXECUTANDO VARREDURA...';
+
+    const terminal = document.getElementById('terminalOutput');
+    terminal.innerHTML = '';
+    terminal.classList.add('active');
+    document.getElementById('resultsContainer').classList.remove('active');
+
+    const logLines = [
+      { text: '<span class="prefix">[SENTINEL]</span> <span class="muted">Inicializando motor heurístico v2.0...</span>', delay: 300 },
+      { text: '<span class="prefix">[SCAN]</span> <span class="info">Carregando 42+ assinaturas de phishing...</span>', delay: 400 },
+      { text: '<span class="prefix">[SCAN]</span> <span class="info">Analisando cabeçalhos e remetente...</span>', delay: 500 },
+      { text: '<span class="prefix">[SCAN]</span> <span class="info">Verificando padrões de urgência e ameaça...</span>', delay: 600 },
+      { text: '<span class="prefix">[SCAN]</span> <span class="info">Buscando solicitações de dados sensíveis...</span>', delay: 500 },
+      { text: '<span class="prefix">[SCAN]</span> <span class="info">Examinando URLs e domínios...</span>', delay: 600 },
+      { text: '<span class="prefix">[SCAN]</span> <span class="info">Analisando estrutura textual...</span>', delay: 500 },
+      { text: '<span class="prefix">[SCAN]</span> <span class="info">Calculando pontuação de risco...</span>', delay: 400 },
+      { text: '<span class="prefix">[DONE]</span> <span class="info">Análise concluída. Gerando relatório...</span>', delay: 300 }
+    ];
+
+    for (const line of logLines) {
+      const div = document.createElement('div');
+      div.className = 'terminal-line';
+      div.innerHTML = line.text;
+      terminal.appendChild(div);
+      terminal.scrollTop = terminal.scrollHeight;
+      await this.sleep(line.delay);
+    }
+
+    await this.sleep(500);
+    const results = Heuristics.analyze(input);
+    
+    const resultLine = document.createElement('div');
+    resultLine.className = 'terminal-line';
+    resultLine.innerHTML = `<span class="prefix">[RESULT]</span> <span class="${results.score >= 70 ? 'error' : results.score >= 40 ? 'warn' : 'info'}">Risco: ${results.score}/100 — ${results.verdict}</span>`;
+    terminal.appendChild(resultLine);
+    terminal.scrollTop = terminal.scrollHeight;
+
+    await this.sleep(800);
+    this.displayResults(results);
+    
+    // Record analysis
+    const isThreat = results.score >= 40;
+    const threatCats = [];
+    if (results.categories.urgency > 0) threatCats.push('urgency');
+    if (results.categories.links > 0) threatCats.push('links');
+    if (results.categories.sensitive > 0) threatCats.push('sensitive');
+    if (results.categories.structure > 0) threatCats.push('structure');
+    
+    Storage.recordAnalysis(isThreat, threatCats);
+    
+    if (isThreat) {
+      Toast.show('error', 'Ameaça Detectada', `Risco: ${results.score}/100`);
+    } else {
+      Toast.show('success', 'Análise Completa', 'E-mail parece seguro.');
+    }
+    
+    Dashboard.updateStats();
+    Achievements.check(Storage.get(Storage.keys.stats, Storage.getDefaultStats()));
+    
+    btn.disabled = false;
+    btn.innerHTML = '⚡ EXECUTAR VARREDURA HEURÍSTICA';
+  },
+
+  displayResults(results) {
+    const container = document.getElementById('resultsContainer');
+    container.classList.add('active');
+
+    this.animateMeter(results.score, 'meterNeedle', 'meterValue');
+
+    const badge = document.getElementById('verdictBadge');
+    badge.textContent = results.verdict;
+    badge.className = 'verdict-badge ' + results.verdictClass;
+    document.getElementById('verdictDescription').textContent = results.verdictDesc;
+
+    const signalsList = document.getElementById('signalsList');
+    if (results.signals.length === 0) {
+      signalsList.innerHTML = '<li style="color: var(--text-muted); text-align: center; padding: 1rem;">✅ Nenhum sinal de phishing detectado.</li>';
+    } else {
+      const severityOrder = { high: 0, medium: 1, low: 2 };
+      results.signals.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+      
+      signalsList.innerHTML = results.signals.map(s => `
+        <li class="signal-item severity-${s.severity}">
+          <span class="signal-icon">${s.icon}</span>
+          <div class="signal-info">
+            <h5>${s.name} ${s.count > 1 ? `(×${s.count})` : ''}</h5>
+            <p>${s.desc} <span style="color: var(--text-muted); font-size: 0.72rem;">(+${s.score} pontos)</span></p>
+          </div>
+          <span class="signal-severity">${s.severity === 'high' ? 'ALTO' : s.severity === 'medium' ? 'MÉDIO' : 'BAIXO'}</span>
+        </li>
+      `).join('');
+    }
+
+    const recsList = document.getElementById('recommendationsList');
+    const recs = Heuristics.generateRecommendations(results.signals);
+    recsList.innerHTML = recs.map(r => `
+      <li>
+        <span class="rec-icon">${r.icon}</span>
+        <span>${r.text}</span>
+      </li>
+    `).join('');
+
+    container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
+
+  animateMeter(targetScore, needleId, valueId) {
+    const needle = document.getElementById(needleId);
+    const valueEl = document.getElementById(valueId);
+
+    const angle = -90 + (targetScore / 100) * 180;
+    needle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+
+    let current = 0;
+    const duration = 1500;
+    const steps = 60;
+    const increment = targetScore / steps;
+    const interval = duration / steps;
+
+    const counter = setInterval(() => {
+      current += increment;
+      if (current >= targetScore) {
+        current = targetScore;
+        clearInterval(counter);
+      }
+      valueEl.textContent = Math.round(current);
+
+      if (current >= 70) {
+        valueEl.style.color = 'var(--accent-danger)';
+      } else if (current >= 40) {
+        valueEl.style.color = 'var(--accent-warning)';
+      } else {
+        valueEl.style.color = 'var(--accent-success)';
+      }
+    }, interval);
+  },
+
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+};
+
+/* ============================================
+   INVESTIGATOR MODULE
+   ============================================ */
+const Investigator = {
+  steps: [
+    { id: 'sender', title: 'Analisando remetente e domínio...', icon: '📧', check: (text) => {
+      const fromMatch = text.match(/(?:from|de):\s*([^\n]*)/i);
+      if (!fromMatch) return { status: 'warning', msg: 'Remetente não identificado' };
+      const from = fromMatch[1].toLowerCase();
+      const suspicious = ['xyz','top','click','tk','ml','ga','cf'];
+      const hasSuspicious = suspicious.some(t => from.includes(`.${t}`));
+      const hasHyphen = /@[a-z0-9-]+\.[a-z]/.test(from) && from.includes('-');
+      if (hasSuspicious || hasHyphen) return { status: 'danger', msg: `Domínio suspeito: ${from.substring(0, 40)}` };
+      return { status: 'success', msg: `Domínio válido: ${from.substring(0, 40)}` };
+    }},
+    { id: 'links', title: 'Verificando links e URLs...', icon: '🔗', check: (text) => {
+      const urls = text.match(/https?:\/\/[^\s]+/gi) || [];
+      if (urls.length === 0) return { status: 'success', msg: 'Nenhum link encontrado' };
+      const suspicious = urls.filter(u => 
+        /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/.test(u) ||
+        /(bit\.ly|tinyurl|t\.co)/.test(u) ||
+        /^http:\/\//.test(u)
+      );
+      if (suspicious.length > 0) return { status: 'danger', msg: `${suspicious.length} link(s) suspeito(s) detectado(s)` };
+      return { status: 'success', msg: `${urls.length} link(s) aparentemente legítimo(s)` };
+    }},
+    { id: 'urgency', title: 'Procurando palavras de urgência...', icon: '⏰', check: (text) => {
+      const patterns = [/urgente/i, /bloqueada/i, /24\s*horas/i, /último\s+aviso/i, /clique\s+agora/i];
+      const found = patterns.filter(p => p.test(text));
+      if (found.length >= 3) return { status: 'danger', msg: `${found.length} padrões de urgência detectados` };
+      if (found.length > 0) return { status: 'warning', msg: `${found.length} padrão(ões) de urgência` };
+      return { status: 'success', msg: 'Nenhum padrão de urgência' };
+    }},
+    { id: 'sensitive', title: 'Procurando pedidos de senha/dados...', icon: '🔐', check: (text) => {
+      const patterns = [/\bsenha\b/i, /\bcpf\b/i, /cart[aã]o/i, /token/i, /pix/i];
+      const found = patterns.filter(p => p.test(text));
+      if (found.length >= 2) return { status: 'danger', msg: `Solicitação de ${found.length} tipo(s) de dado sensível` };
+      if (found.length > 0) return { status: 'warning', msg: 'Solicitação de dado sensível' };
+      return { status: 'success', msg: 'Nenhuma solicitação de dado sensível' };
+    }},
+    { id: 'attachments', title: 'Procurando anexos perigosos...', icon: '📎', check: (text) => {
+      const dangerous = /\.(exe|scr|bat|cmd|vbs|js|zip)/gi;
+      const matches = text.match(dangerous);
+      if (matches) return { status: 'danger', msg: `${matches.length} anexo(s) suspeito(s)` };
+      return { status: 'success', msg: 'Nenhum anexo perigoso' };
+    }},
+    { id: 'structure', title: 'Analisando estrutura textual...', icon: '📝', check: (text) => {
+      const issues = [];
+      if (/prezado\s+cliente/i.test(text)) issues.push('saudação genérica');
+      if (/[A-Z]{10,}/.test(text)) issues.push('CAIXA ALTA excessiva');
+      if (/!!!/.test(text)) issues.push('exclamações excessivas');
+      if (issues.length >= 2) return { status: 'warning', msg: `Estrutura suspeita: ${issues.join(', ')}` };
+      if (issues.length === 1) return { status: 'warning', msg: issues[0] };
+      return { status: 'success', msg: 'Estrutura normal' };
+    }},
+    { id: 'score', title: 'Calculando risco final...', icon: '📊', check: (text) => {
+      const result = Heuristics.analyze(text);
+      return { status: result.score >= 70 ? 'danger' : result.score >= 40 ? 'warning' : 'success', msg: `Risco: ${result.score}/100`, score: result.score, verdict: result.verdict };
+    }}
+  ],
+
+  async start() {
+    const input = document.getElementById('investigatorInput').value.trim();
+    if (!input) {
+      Toast.show('warning', 'Aviso', 'Cole um e-mail para investigar.');
+      return;
+    }
+
+    const container = document.getElementById('investigationSteps');
+    container.innerHTML = '';
+    document.getElementById('investigatorResults').classList.remove('active');
+
+    // Build all steps
+    this.steps.forEach(step => {
+      const div = document.createElement('div');
+      div.className = 'investigation-step';
+      div.id = `inv-step-${step.id}`;
+      div.innerHTML = `
+        <div class="step-status">⋯</div>
+        <div class="step-content">
+          <div class="step-title">${step.icon} ${step.title}</div>
+          <div class="step-progress"><div class="step-progress-bar"></div></div>
+          <div class="step-result"></div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+
+    // Execute step by step
+    for (const step of this.steps) {
+      const el = document.getElementById(`inv-step-${step.id}`);
+      el.classList.add('active');
+      
+      // Animate progress
+      const bar = el.querySelector('.step-progress-bar');
+      let p = 0;
+      const pInt = setInterval(() => {
+        p += 10;
+        bar.style.width = p + '%';
+        if (p >= 100) clearInterval(pInt);
+      }, 60);
+
+      await Analyzer.sleep(600);
+      
+      const result = step.check(input);
+      
+      el.classList.remove('active');
+      el.classList.add('completed');
+      const status = el.querySelector('.step-status');
+      const resultEl = el.querySelector('.step-result');
+      
+      if (result.status === 'success') {
+        status.innerHTML = '✓';
+        resultEl.textContent = '✔ ' + result.msg;
+        resultEl.classList.add('show', 'success');
+      } else if (result.status === 'warning') {
+        status.innerHTML = '⚠';
+        resultEl.textContent = '⚠ ' + result.msg;
+        resultEl.classList.add('show', 'warning');
+      } else {
+        status.innerHTML = '✕';
+        resultEl.textContent = '✕ ' + result.msg;
+        resultEl.classList.add('show', 'danger');
+      }
+      
+      await Analyzer.sleep(300);
+    }
+
+    // Final results
+    const finalResult = Heuristics.analyze(input);
+    const resultsContainer = document.getElementById('investigatorResults');
+    resultsContainer.classList.add('active');
+    
+    Analyzer.animateMeter(finalResult.score, 'invMeterNeedle', 'invMeterValue');
+    
+    const probEl = document.getElementById('invProbability');
+    probEl.textContent = finalResult.probability + '%';
+    probEl.style.color = finalResult.score >= 70 ? 'var(--accent-danger)' : finalResult.score >= 40 ? 'var(--accent-warning)' : 'var(--accent-success)';
+    
+    const verdictEl = document.getElementById('invVerdict');
+    verdictEl.innerHTML = `<span class="verdict-badge ${finalResult.verdictClass}">${finalResult.verdict}</span>`;
+
+    resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    Toast.show('success', 'Investigação Completa', `${finalResult.signals.length} sinais encontrados.`);
+    
+    Storage.recordAnalysis(finalResult.score >= 40, []);
+    Dashboard.updateStats();
+    Achievements.check(Storage.get(Storage.keys.stats, Storage.getDefaultStats()));
+  }
+};
+
+/* ============================================
+   QUIZ MODULE
+   ============================================ */
+const Quiz = {
+  questions: [
+    {
+      from: "seguranca@itau.com.br",
+      to: "joao@email.com",
+      subject: "Seu extrato mensal está disponível",
+      body: "Olá João,\n\nSeu extrato de julho está disponível no aplicativo ou no internet banking. Acesse pelo app oficial.\n\nEquipe Itaú",
+      answer: "safe",
+      explanation: "Este é um e-mail legítimo. Usa o domínio oficial (itau.com.br), se dirige pelo nome, não contém links e não solicita dados.",
+      signs: []
+    },
+    {
+      from: "atendimento@itau-seguranca-2024.xyz",
+      to: "cliente@email.com",
+      subject: "ÚLTIMO AVISO - Sua conta será bloqueada!",
+      body: "Prezado cliente,\n\nSua conta será BLOQUEADA PERMANENTEMENTE em 24 horas. CLIQUE AGORA para atualizar:\nhttp://192.168.1.50/itau/verificar\n\nInforme CPF, senha e token.",
+      answer: "phishing",
+      explanation: "Clássico phishing: domínio falso (.xyz), urgência extrema, link com IP, pedido de dados sensíveis.",
+      signs: ["Domínio suspeito (.xyz)", "Urgência artificial", "URL com IP", "Pedido de senha/CPF/token"]
+    },
+    {
+      from: "newsletter@spotify.com",
+      to: "maria@gmail.com",
+      subject: "Seu resumo semanal está pronto!",
+      body: "Olá Maria!\n\nVocê ouviu 347 minutos de música essa semana. Abra o app Spotify ou acesse spotify.com.\n\nEquipe Spotify 🎶",
+      answer: "safe",
+      explanation: "E-mail legítimo do Spotify. Domínio oficial, personalizado, sem links suspeitos.",
+      signs: []
+    },
+    {
+      from: "no-reply@mercadolivre-promocoes.com",
+      to: "cliente@email.com",
+      subject: "Seu pedido precisa de confirmação",
+      body: "Identificamos pendência no pedido #8834221.\n\nConfirme em: http://bit.ly/3xMlConfirm\n\nPrecisamos confirmar seu CPF.\n\nCaso não confirme em 48h, será cancelado.",
+      answer: "phishing",
+      explanation: "Phishing: domínio imitando Mercado Livre, URL encurtada (bit.ly), pedido de CPF, prazo artificial.",
+      signs: ["Domínio suspeito", "URL encurtada", "Pedido de CPF", "Prazo artificial"]
+    },
+    {
+      from: "contato@amazon.com.br",
+      to: "cliente@email.com",
+      subject: "Confirmação do seu pedido #123-45678",
+      body: "Obrigado pela compra!\n\nSeu pedido será entregue em 3-5 dias úteis. Acompanhe em amazon.com.br/pedidos.\n\nAtenciosamente,\nAmazon",
+      answer: "safe",
+      explanation: "E-mail legítimo da Amazon. Domínio oficial, sem solicitações suspeitas.",
+      signs: []
+    },
+    {
+      from: "suporte@microsoft-support.com",
+      to: "funcionario@empresa.com",
+      subject: "Atividade incomum de entrada",
+      body: "Detectamos entrada suspeita em sua conta.\n\nSe não foi você, proteja sua conta em:\nhttps://microsoft-support.com/verify\n\nEquipe Microsoft",
+      answer: "phishing",
+      explanation: "Phishing sofisticado: domínio 'microsoft-support.com' NÃO é oficial da Microsoft (microsoft.com). Tática comum.",
+      signs: ["Domínio imitando marca", "Gatilho de medo", "Link suspeito"]
+    },
+    {
+      from: "nao-responda@nubank.com.br",
+      to: "cliente@email.com",
+      subject: "Sua fatura de agosto está disponível",
+      body: "Olá!\n\nSua fatura do Nubank de agosto já está disponível no aplicativo. Abra o app Nubank para ver os detalhes.\n\nEquipe Nubank",
+      answer: "safe",
+      explanation: "E-mail legítimo do Nubank. Domínio oficial, não solicita dados, redireciona ao app oficial.",
+      signs: []
+    },
+    {
+      from: "premios@shopee-sorteio.club",
+      to: "cliente@email.com",
+      subject: "PARABÉNS! Você ganhou R$ 500!",
+      body: "Você foi SORTEADO!\n\nGanhe R$ 500 em créditos agora!\n\nClique: http://bit.ly/shopee-premio\n\nInforme seus dados para receber. Responda em 12 horas!",
+      answer: "phishing",
+      explanation: "Phishing clássico de prêmio falso. Urgência, URL encurtada, domínio suspeito (.club), promessa de ganho.",
+      signs: ["Promessa de prêmio", "Domínio falso (.club)", "URL encurtada", "Prazo artificial", "Pedido de dados"]
+    },
+    {
+      from: "cobranca@netflix.com",
+      to: "cliente@email.com",
+      subject: "Problema com sua assinatura",
+      body: "Olá,\n\nNão conseguimos processar seu pagamento. Atualize sua forma de pagamento em netflix.com/update.\n\nNetflix",
+      answer: "safe",
+      explanation: "Legítimo. Domínio oficial (netflix.com), sem pedido direto de dados, URL correta.",
+      signs: []
+    },
+    {
+      from: "receita.federal@gov-br.net",
+      to: "contribuinte@email.com",
+      subject: "Declaração com pendência - MALHA FINA",
+      body: "Prezado contribuinte,\n\nSua declaração foi retida na malha fina. Regularize AGORA em:\nhttp://189.40.22.15/receita/regularizar\n\nInforme CPF completo e senha do Gov.br em 24 horas.\n\nReceita Federal",
+      answer: "phishing",
+      explanation: "Phishing grave: domínio falso (gov-br.net não é oficial - o correto é gov.br), URL com IP, urgência, pedido de senha.",
+      signs: ["Domínio falso (gov-br.net)", "URL com IP", "Pedido de senha", "Urgência extrema", "Ameaça de malha fina"]
+    }
+  ],
+
+  currentIndex: 0,
+  score: 0,
+  answers: [],
+
+  start() {
+    this.currentIndex = 0;
+    this.score = 0;
+    this.answers = [];
+    
+    document.getElementById('quizStart').style.display = 'none';
+    document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizGame').style.display = 'block';
+    
+    this.renderQuestion();
+  },
+
+  renderQuestion() {
+    const q = this.questions[this.currentIndex];
+    const total = this.questions.length;
+    
+    document.getElementById('quizProgressLabel').textContent = `Questão ${this.currentIndex + 1} de ${total}`;
+    document.getElementById('quizScore').textContent = `${this.score} acerto${this.score !== 1 ? 's' : ''}`;
+    document.getElementById('quizProgressFill').style.width = `${((this.currentIndex) / total) * 100}%`;
+    
+    const container = document.getElementById('quizQuestionContainer');
+    container.innerHTML = `
+      <div class="quiz-question-card">
+        <div class="quiz-email-mock">
+          <div class="quiz-email-header-mock">
+            <div class="quiz-email-field"><span class="label">De:</span><span class="value">${this.escapeHtml(q.from)}</span></div>
+            <div class="quiz-email-field"><span class="label">Para:</span><span class="value">${this.escapeHtml(q.to)}</span></div>
+            <div class="quiz-email-field"><span class="label">Assunto:</span><span class="value">${this.escapeHtml(q.subject)}</span></div>
+          </div>
+          <div class="quiz-email-body">${this.escapeHtml(q.body)}</div>
+        </div>
+        <div class="quiz-answers">
+          <button class="quiz-answer-btn" data-choice="safe" onclick="Quiz.answer('safe')">
+            🛡️ Seguro
+          </button>
+          <button class="quiz-answer-btn" data-choice="phishing" onclick="Quiz.answer('phishing')">
+            ⚠️ Phishing
+          </button>
+        </div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+      </div>
+    `;
+  },
+
+  answer(choice) {
+    const q = this.questions[this.currentIndex];
+    const correct = choice === q.answer;
+    if (correct) this.score++;
+    
+    this.answers.push({ question: this.currentIndex, correct, choice, correctAnswer: q.answer });
+    
+    // Highlight buttons
+    document.querySelectorAll('.quiz-answer-btn').forEach(btn => {
+      btn.disabled = true;
+      if (btn.dataset.choice === q.answer) btn.classList.add('correct');
+      else if (btn.dataset.choice === choice && !correct) btn.classList.add('wrong');
+    });
+    
+    // Show feedback
+    const feedback = document.getElementById('quizFeedback');
+    feedback.className = `quiz-feedback show ${correct ? 'correct' : 'wrong'}`;
+    feedback.innerHTML = `
+      <div class="quiz-feedback-title">
+        ${correct ? '✓ Resposta correta!' : '✕ Resposta incorreta'}
+      </div>
+      <p>${q.explanation}</p>
+      ${q.signs.length > 0 ? `
+        <div class="quiz-signs">
+          <strong style="font-size: 0.78rem; color: var(--text-muted);">Sinais presentes:</strong>
+          ${q.signs.map(s => `<div class="quiz-sign">⚠ ${s}</div>`).join('')}
+        </div>
+      ` : ''}
+      <button class="btn-primary quiz-next-btn" onclick="Quiz.next()">
+        ${this.currentIndex < this.questions.length - 1 ? 'Próxima →' : 'Ver Resultado 🏆'}
+      </button>
+    `;
+    
+    if (correct && typeof confetti !== 'undefined') {
+      confetti({ particleCount: 30, spread: 60, origin: { y: 0.7 } });
+    }
+  },
+
+  next() {
+    this.currentIndex++;
+    if (this.currentIndex < this.questions.length) {
+      this.renderQuestion();
+    } else {
+      this.finish();
+    }
+  },
+
+  finish() {
+    document.getElementById('quizGame').style.display = 'none';
+    const resultDiv = document.getElementById('quizResult');
+    resultDiv.style.display = 'block';
+    
+    const total = this.questions.length;
+    const pct = Math.round((this.score / total) * 100);
+    
+    let level, levelDesc;
+    if (pct >= 90) { level = '🏆 ESPECIALISTA'; levelDesc = 'Você é um verdadeiro caçador de phishing!'; }
+    else if (pct >= 70) { level = '⭐ INTERMEDIÁRIO'; levelDesc = 'Ótimo conhecimento! Continue praticando.'; }
+    else if (pct >= 50) { level = '📚 APRENDIZ'; levelDesc = 'Bom começo! Estude mais na aba Aprender.'; }
+    else { level = '🔰 INICIANTE'; levelDesc = 'Hora de estudar! Revise os sinais de alerta.'; }
+    
+    resultDiv.innerHTML = `
+      <div class="result-score-circle" style="--pct: ${pct}">
+        <div class="result-score-value">${pct}<small>%</small></div>
+      </div>
+      <div class="result-level">${level}</div>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">${levelDesc}</p>
+      
+      <div class="result-stats">
+        <div class="stat-card">
+          <span class="value" style="color: var(--accent-success);">${this.score}</span>
+          <span class="label">Acertos</span>
+        </div>
+        <div class="stat-card">
+          <span class="value" style="color: var(--accent-danger);">${total - this.score}</span>
+          <span class="label">Erros</span>
+        </div>
+        <div class="stat-card">
+          <span class="value">${total}</span>
+          <span class="label">Total</span>
+        </div>
+      </div>
+      
+      <button class="btn-primary" onclick="Quiz.restart()" style="margin-top: 1rem;">
+        🔄 Jogar Novamente
+      </button>
+      <button class="btn-secondary" onclick="switchTab('learn')">
+        📚 Estudar Mais
+      </button>
+    `;
+    
+    // Record stats
+    Storage.recordQuiz(this.score, total);
+    const stats = Storage.get(Storage.keys.stats, Storage.getDefaultStats());
+    stats._lastPerfect = this.score === total;
+    Storage.set(Storage.keys.stats, stats);
+    
+    Dashboard.updateStats();
+    Achievements.check(stats);
+    
+    if (pct >= 80 && typeof confetti !== 'undefined') {
+      confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+    }
+    
+    Toast.show('success', 'Quiz Concluído!', `Você acertou ${this.score}/${total}`);
+  },
+
+  restart() {
+    document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizStart').style.display = 'block';
+  },
+
+  escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+};
+
+/* ============================================
+   PROFESSOR MODULE
+   ============================================ */
+const Professor = {
+  examples: [
+    {
+      title: "E-mail Bancário Legítimo",
+      email: {
+        from: "nao-responda@itau.com.br",
+        to: "cliente@email.com",
+        subject: "Seu extrato de julho está disponível",
+        body: "Olá, João!\n\nSeu extrato do mês de julho está disponível no app ou no internet banking. Para acessá-lo, abra o aplicativo Itaú.\n\nAtenciosamente,\nEquipe Itaú"
+      },
+      analysis: {
+        verdict: "LEGÍTIMO",
+        score: 5,
+        points: [
+          { type: "good", text: "Domínio oficial (@itau.com.br)" },
+          { type: "good", text: "Usa o nome do destinatário" },
+          { type: "good", text: "Não contém links suspeitos" },
+          { type: "good", text: "Não solicita dados pessoais" },
+          { type: "good", text: "Não usa pressão ou urgência" }
+        ],
+        teaching: "Este é o padrão de comunicação de bancos legítimos. Eles NUNCA pedem senha por e-mail e sempre redirecionam para o app oficial."
+      }
+    },
+    {
+      title: "Phishing Bancário Clássico",
+      email: {
+        from: "Itau Seguranca <atendimento@itau-seguranca.xyz>",
+        to: "cliente@email.com",
+        subject: "ÚLTIMO AVISO - Conta será bloqueada em 24h",
+        body: "Prezado cliente,\n\nSua conta será BLOQUEADA PERMANENTEMENTE em 24 horas.\n\nPara evitar, CLIQUE AGORA:\nhttp://192.168.1.100/itau/verificar\n\nInforme: CPF, senha, token e dados do cartão."
+      },
+      analysis: {
+        verdict: "PHISHING",
+        score: 85,
+        points: [
+          { type: "bad", text: "Domínio falso (.xyz em vez de .com.br)" },
+          { type: "bad", text: "Saudação genérica (Prezado cliente)" },
+          { type: "bad", text: "Urgência artificial (24 horas)" },
+          { type: "bad", text: "URL com IP numérico" },
+          { type: "bad", text: "CAIXA ALTA excessiva" },
+          { type: "bad", text: "Solicita senha, CPF, token e cartão" }
+        ],
+        teaching: "Todos os 6 sinais clássicos de phishing em um só e-mail. Este é o exemplo perfeito para mostrar alunos."
+      }
+    },
+    {
+      title: "Phishing Sofisticado (Microsoft)",
+      email: {
+        from: "Microsoft Security <security@microsoft-support.com>",
+        to: "usuario@empresa.com",
+        subject: "Atividade incomum na sua conta",
+        body: "Detectamos tentativa de entrada suspeita em sua conta corporativa a partir de São Paulo.\n\nSe não foi você, proteja sua conta em:\nhttps://microsoft-support.com/verify-account\n\nAtenciosamente,\nEquipe Microsoft"
+      },
+      analysis: {
+        verdict: "PHISHING",
+        score: 75,
+        points: [
+          { type: "bad", text: "Domínio imitando marca (microsoft-support.com ≠ microsoft.com)" },
+          { type: "bad", text: "Gatilho de medo (atividade suspeita)" },
+          { type: "bad", text: "Link suspeito" },
+          { type: "good", text: "Aparência profissional (parece legítimo)" }
+        ],
+        teaching: "Phishing moderno é sutil. O criminoso usa 'microsoft-support' para parecer oficial. Sempre verificar o domínio exato!"
+      }
+    },
+    {
+      title: "Golpe de Prêmio Falso",
+      email: {
+        from: "promocoes@shopee-sorteio.club",
+        to: "cliente@email.com",
+        subject: "PARABÉNS! Você ganhou R$ 500!!!",
+        body: "Você foi SORTEADO!\n\nGanhe R$ 500 em créditos AGORA!\n\nClique: http://bit.ly/shopee-premio\n\nInforme seus dados para receber.\n\nResponda em 12 horas!"
+      },
+      analysis: {
+        verdict: "PHISHING",
+        score: 90,
+        points: [
+          { type: "bad", text: "Domínio falso (.club não é Shopee)" },
+          { type: "bad", text: "Promessa de ganho fácil (R$ 500)" },
+          { type: "bad", text: "URL encurtada (bit.ly oculta destino)" },
+          { type: "bad", text: "Exclamações excessivas (!!!)" },
+          { type: "bad", text: "Prazo artificial (12 horas)" },
+          { type: "bad", text: "Pedido de dados" }
+        ],
+        teaching: "Golpes de prêmio são iscas clássicas. Lembre-se: se é bom demais para ser verdade, provavelmente é golpe!"
+      }
+    },
+    {
+      title: "Golpe da Receita Federal",
+      email: {
+        from: "receita.federal@gov-br.net",
+        to: "contribuinte@email.com",
+        subject: "DECLARAÇÃO RETIDA - MALHA FINA",
+        body: "Prezado contribuinte,\n\nSua declaração foi retida na MALHA FINA. Regularize AGORA:\n\nhttp://189.40.22.15/receita/regularizar\n\nInforme CPF e senha Gov.br em 24 horas."
+      },
+      analysis: {
+        verdict: "PHISHING",
+        score: 95,
+        points: [
+          { type: "bad", text: "Domínio falso (gov-br.net ≠ gov.br)" },
+          { type: "bad", text: "URL com IP numérico" },
+          { type: "bad", text: "Ameaça de malha fina" },
+          { type: "bad", text: "CAIXA ALTA agressiva" },
+          { type: "bad", text: "Pedido de senha Gov.br" },
+          { type: "bad", text: "Urgência de 24h" }
+        ],
+        teaching: "A Receita Federal NUNCA envia e-mails com links para regularização. Sempre acesse gov.br diretamente!"
+      }
+    },
+    {
+      title: "E-mail de E-commerce Legítimo",
+      email: {
+        from: "contato@amazon.com.br",
+        to: "cliente@email.com",
+        subject: "Confirmação do seu pedido #123-45678",
+        body: "Obrigado pela compra!\n\nSeu pedido será entregue em 3-5 dias úteis. Acompanhe em amazon.com.br/pedidos.\n\nAtenciosamente,\nAmazon"
+      },
+      analysis: {
+        verdict: "LEGÍTIMO",
+        score: 5,
+        points: [
+          { type: "good", text: "Domínio oficial (amazon.com.br)" },
+          { type: "good", text: "Sem links encurtados" },
+          { type: "good", text: "Não solicita dados sensíveis" },
+          { type: "good", text: "Informação clara e direta" },
+          { type: "good", text: "Sem urgência ou ameaças" }
+        ],
+        teaching: "E-commerces legítimos enviam apenas confirmações. Se pedirem atualização de pagamento por e-mail, é golpe!"
+      }
+    }
+  ],
+
+  current: 0,
+  revealed: false,
+
+  init() {
+    this.render();
+  },
+
+  render() {
+    const ex = this.examples[this.current];
+    document.getElementById('profCounter').textContent = `Exemplo ${this.current + 1} de ${this.examples.length}`;
+    
+    document.getElementById('profEmail').innerHTML = `
+      <h3 style="font-family: var(--font-mono); color: var(--accent-primary); margin-bottom: 1rem; font-size: 1rem;">
+        📧 ${ex.title}
+      </h3>
+      <div style="font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 1rem;">
+        <div style="margin-bottom: 0.4rem;"><span style="color: var(--text-muted);">De:</span> <strong>${this.escape(ex.email.from)}</strong></div>
+        <div style="margin-bottom: 0.4rem;"><span style="color: var(--text-muted);">Para:</span> ${this.escape(ex.email.to)}</div>
+        <div style="margin-bottom: 0.4rem;"><span style="color: var(--text-muted);">Assunto:</span> ${this.escape(ex.email.subject)}</div>
+      </div>
+      <div style="padding: 1rem; background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.88rem; line-height: 1.7; white-space: pre-wrap;">${this.escape(ex.email.body)}</div>
+    `;
+    
+    const analysis = document.getElementById('profAnalysis');
+    analysis.classList.remove('revealed');
+    analysis.innerHTML = '';
+    this.revealed = false;
+  },
+
+  reveal() {
+    if (this.revealed) return;
+    const ex = this.examples[this.current];
+    const analysis = document.getElementById('profAnalysis');
+    
+    const isPhish = ex.analysis.verdict === 'PHISHING';
+    const verdictClass = isPhish ? 'danger' : 'legitimate';
+    
+    analysis.innerHTML = `
+      <h4>🔍 Análise Detalhada</h4>
+      <div style="text-align: center; margin: 1rem 0;">
+        <span class="verdict-badge ${verdictClass}">${ex.analysis.verdict}</span>
+        <div style="font-family: var(--font-mono); color: var(--text-muted); margin-top: 0.5rem; font-size: 0.85rem;">
+          Pontuação: <strong style="color: var(--text-primary);">${ex.analysis.score}/100</strong>
+        </div>
+      </div>
+      
+      <div style="margin-top: 1.5rem;">
+        ${ex.analysis.points.map(p => `
+          <div style="padding: 0.5rem 0; border-bottom: 1px dashed var(--border-color); display: flex; gap: 0.5rem;">
+            <span style="color: ${p.type === 'good' ? 'var(--accent-success)' : 'var(--accent-danger)'};">
+              ${p.type === 'good' ? '✓' : '✕'}
+            </span>
+            <span style="color: var(--text-secondary); font-size: 0.88rem;">${p.text}</span>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 217, 255, 0.08); border-left: 3px solid var(--accent-primary); border-radius: 6px;">
+        <div style="font-family: var(--font-mono); color: var(--accent-primary); font-size: 0.85rem; margin-bottom: 0.5rem;">💡 Ponto de Ensino</div>
+        <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">${ex.analysis.teaching}</p>
+      </div>
+    `;
+    
+    analysis.classList.add('revealed');
+    this.revealed = true;
+  },
+
+  next() {
+    this.current = (this.current + 1) % this.examples.length;
+    this.render();
+  },
+
+  prev() {
+    this.current = (this.current - 1 + this.examples.length) % this.examples.length;
+    this.render();
+  },
+
+  escape(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+};
+
+/* ============================================
+   GENERATOR MODULE
+   ============================================ */
+const Generator = {
+  brands: [
+    { id: 'banco', name: 'Banco', icon: '🏦', domain: 'banco-seguro.com' },
+    { id: 'netflix', name: 'Netflix', icon: '🎬', domain: 'netflix.com' },
+    { id: 'correios', name: 'Correios', icon: '📦', domain: 'correios.com.br' },
+    { id: 'mercadolivre', name: 'Mercado Livre', icon: '🛒', domain: 'mercadolivre.com.br' },
+    { id: 'receita', name: 'Receita Federal', icon: '🏛️', domain: 'gov.br' },
+    { id: 'shopee', name: 'Shopee', icon: '🛍️', domain: 'shopee.com.br' },
+    { id: 'amazon', name: 'Amazon', icon: '📦', domain: 'amazon.com.br' },
+    { id: 'whatsapp', name: 'WhatsApp', icon: '💬', domain: 'whatsapp.com' },
+    { id: 'instagram', name: 'Instagram', icon: '📸', domain: 'instagram.com' },
+    { id: 'nubank', name: 'Nubank', icon: '💳', domain: 'nubank.com.br' }
+  ],
+
+  templates: {
+    banco: {
+      from: 'seguranca@banco-{fake}.xyz',
+      subject: 'ÚLTIMO AVISO - Conta bloqueada',
+      body: 'Prezado cliente,\n\nDetectamos uma atividade suspeita na sua conta.\n\nEm 24 horas sua conta será BLOQUEADA PERMANENTEMENTE.\n\nPara evitar, CLIQUE AGORA:\nhttp://192.168.1.50/banco/verificar\n\nInforme seu CPF completo, senha e token.',
+      techniques: [
+        { name: '🎭 Falso Domínio', desc: 'Usa domínio falso (banco-{fake}.xyz) imitando o banco real.' },
+        { name: '⏰ Urgência Artificial', desc: 'Prazo de 24 horas para criar pânico e ação impulsiva.' },
+        { name: '🔗 URL com IP', desc: 'Endereço IP numérico em vez de domínio legítimo.' },
+        { name: '🔐 Pedido de Dados', desc: 'Solicita CPF, senha e token — NENHUM banco faz isso.' },
+        { name: '😨 Ameaça', desc: 'Ameaça de "bloqueio permanente" para causar medo.' }
+      ]
+    },
+    netflix: {
+      from: 'suporte@netflix-update.club',
+      subject: 'Problema com seu pagamento',
+      body: 'Olá,\n\nNão conseguimos processar seu último pagamento. Sua assinatura será SUSPENSA em 24 horas.\n\nAtualize seu cartão AGORA:\nhttp://bit.ly/netflix-update\n\nInforme número do cartão, CVV e senha.',
+      techniques: [
+        { name: '🎭 Domínio Falso', desc: 'netflix-update.club não é Netflix (netflix.com é o real).' },
+        { name: '🔗 URL Encurtada', desc: 'bit.ly oculta o destino real do link.' },
+        { name: '💳 Dados de Cartão', desc: 'Solicita dados completos do cartão — golpe financeiro.' },
+        { name: '⏰ Prazo Artificial', desc: '24 horas para suspender é pressão desnecessária.' }
+      ]
+    },
+    correios: {
+      from: 'entregas@correios-rastreio.top',
+      subject: 'Taxa de entrega pendente - R$ 2,99',
+      body: 'Sua encomenda #BR8834221 está aguardando pagamento de taxa de R$ 2,99.\n\nPague agora para receber:\nhttp://correios-rastreio.top/pagar\n\nInforme dados do cartão para pagamento.',
+      techniques: [
+        { name: '🎭 Domínio Falso', desc: 'correios-rastreio.top imita Correios (correios.com.br).' },
+        { name: '💰 Pequeno Valor', desc: 'Usa valor pequeno (R$ 2,99) para não levantar suspeitas.' },
+        { name: '🔗 URL Suspeita', desc: 'Link direto para site falso que clona a interface.' },
+        { name: '📦 Contexto Realista', desc: 'Usa número de rastreio para parecer legítimo.' }
+      ]
+    },
+    mercadolivre: {
+      from: 'atendimento@mercadolivre-promocoes.com',
+      subject: 'Seu pedido precisa de confirmação',
+      body: 'Olá,\n\nPedido #8834221 com pendência de endereço. Confirme em 48h:\n\nhttp://bit.ly/3xMlConfirm\n\nPrecisamos do seu CPF para liberar envio.',
+      techniques: [
+        { name: '🎭 Domínio Híbrido', desc: 'mercadolivre-promocoes.com adiciona palavra suspeita.' },
+        { name: '🔗 URL Encurtada', desc: 'bit.ly impede ver o destino real.' },
+        { name: '🔐 Pedido de CPF', desc: 'CPF desnecessário para "confirmar endereço".' },
+        { name: '⏰ Prazo Artificial', desc: '48 horas para cancelamento automático.' }
+      ]
+    },
+    receita: {
+      from: 'receita.federal@gov-br.net',
+      subject: 'DECLARAÇÃO RETIDA - MALHA FINA',
+      body: 'Prezado contribuinte,\n\nSua declaração foi retida na MALHA FINA. Regularize AGORA:\n\nhttp://189.40.22.15/receita/regularizar\n\nInforme CPF e senha Gov.br em 24 horas.',
+      techniques: [
+        { name: '🎭 Domínio Falso', desc: 'gov-br.net NÃO é gov.br. Hífen muda tudo!' },
+        { name: '🔗 URL com IP', desc: 'Endereço IP em vez de domínio oficial.' },
+        { name: '😨 Ameaça Grave', desc: 'Ameaça de malha fina para causar pânico.' },
+        { name: '🔐 Senha Gov.br', desc: 'Solicita senha do Gov.br — órgão NUNCA pede isso.' }
+      ]
+    },
+    shopee: {
+      from: 'premios@shopee-sorteio.club',
+      subject: 'PARABÉNS! Você ganhou R$ 500!',
+      body: 'Você foi SORTEADO!\n\nGanhe R$ 500 em créditos AGORA!\n\nClique: http://bit.ly/shopee-premio\n\nInforme seus dados para receber.\n\nResponda em 12 horas!',
+      techniques: [
+        { name: '🎁 Promessa de Ganho', desc: 'Prêmio falso para atrair cliques impulsivos.' },
+        { name: '🎭 Domínio Falso', desc: '.club não é domínio oficial da Shopee.' },
+        { name: '🔗 URL Encurtada', desc: 'bit.ly oculta destino real.' },
+        { name: '⏰ Urgência Extrema', desc: '12 horas — pressão absurda para prêmio real.' },
+        { name: '📢 Exclamações', desc: 'Múltiplas exclamações — linguagem alarmista.' }
+      ]
+    },
+    amazon: {
+      from: 'contato@amazon-seguranca.info',
+      subject: 'Compra suspeita de R$ 2.899',
+      body: 'Detectamos uma compra suspeita na sua conta no valor de R$ 2.899.\n\nSe não foi você, CANCELE AGORA:\n\nhttp://amazon-seguranca.info/cancelar\n\nInforme login e senha para bloquear.',
+      techniques: [
+        { name: '😨 Gatilho de Medo', desc: 'Valor alto (R$ 2.899) para causar pânico imediato.' },
+        { name: '🎭 Domínio Falso', desc: 'amazon-seguranca.info não é Amazon.' },
+        { name: '🔐 Pedido de Senha', desc: 'Amazon NUNCA pede senha por e-mail.' },
+        { name: '⏰ Ação Imediata', desc: '"CANCELE AGORA" — ação impulsiva.' }
+      ]
+    },
+    whatsapp: {
+      from: 'suporte@whatsapp-security.top',
+      subject: 'Seu código de verificação',
+      body: 'Olá,\n\nDetectamos tentativa de acesso ao seu WhatsApp. Para proteger, envie seu código de 6 dígitos:\n\nResponda este e-mail com o código recebido por SMS.\n\nEquipe WhatsApp',
+      techniques: [
+        { name: '🎭 Domínio Falso', desc: 'whatsapp-security.top não é whatsapp.com.' },
+        { name: '🔐 Roubo de Código', desc: 'Pedir código de verificação = sequestro de conta.' },
+        { name: '📱 Engenharia Social', desc: 'Pede resposta por e-mail — WhatsApp só usa SMS/app.' }
+      ]
+    },
+    instagram: {
+      from: 'security@mail-instagram-verify.xyz',
+      subject: 'Sua conta será desativada',
+      body: 'Detectamos violação dos termos.\n\nSua conta será DESATIVADA em 24h se não confirmar identidade.\n\nConfirme em:\nhttp://instagram-verify.xyz/confirm\n\nLogin + senha + código SMS.',
+      techniques: [
+        { name: '🎭 Domínio Falso', desc: 'instagram-verify.xyz não é instagram.com.' },
+        { name: '😨 Ameaça de Perda', desc: 'Conta "desativada" — medo de perder fotos/seguidores.' },
+        { name: '🔐 Dados Completos', desc: 'Pede login, senha E código SMS — acesso total.' },
+        { name: '⏰ Prazo Curto', desc: '24 horas para ação sem reflexão.' }
+      ]
+    },
+    nubank: {
+      from: 'seguranca@nubank-verify.click',
+      subject: 'Transação bloqueada',
+      body: 'Uma transação de R$ 1.499 foi bloqueada.\n\nSe foi você, confirme:\nhttp://nubank-verify.click/confirmar\n\nInforme senha do app e código PIX.',
+      techniques: [
+        { name: '🎭 Domínio Falso', desc: 'nubank-verify.click não é nubank.com.br.' },
+        { name: '💰 Valor Alto', desc: 'R$ 1.499 causa urgência e medo.' },
+        { name: '🔐 Senha do App', desc: 'Nubank NUNCA pede senha por e-mail.' },
+        { name: '💸 Código PIX', desc: 'Código PIX = transferência direta para golpista.' }
+      ]
+    }
+  },
+
+  selected: null,
+
+  init() {
+    const container = document.getElementById('generatorBrands');
+    container.innerHTML = this.brands.map(b => `
+      <div class="brand-card" data-brand="${b.id}" onclick="Generator.select('${b.id}')">
+        <div class="brand-icon">${b.icon}</div>
+        <div class="brand-name">${b.name}</div>
+      </div>
+    `).join('');
+  },
+
+  select(brandId) {
+    this.selected = brandId;
+    document.querySelectorAll('.brand-card').forEach(c => {
+      c.classList.toggle('selected', c.dataset.brand === brandId);
+    });
+  },
+
+  generate() {
+    if (!this.selected) {
+      Toast.show('warning', 'Aviso', 'Selecione uma marca primeiro.');
+      return;
+    }
+
+    const template = this.templates[this.selected];
+    const brand = this.brands.find(b => b.id === this.selected);
+    
+    const body = document.getElementById('generatedEmailBody');
+    
+    // Highlight techniques in text
+    let highlighted = this.escape(template.body);
+    
+    // Highlight suspicious URLs
+    highlighted = highlighted.replace(
+      /(https?:\/\/[^\s]+|bit\.ly\/[^\s]+)/g,
+      '<span class="highlight-phish" title="Link suspeito">$1</span>'
+    );
+    
+    // Highlight sensitive data requests
+    highlighted = highlighted.replace(
+      /(senha|CPF|token|cart[aã]o|CVV|c[oó]digo|login)/gi,
+      '<span class="highlight-phish" title="Dado sensível solicitado">$1</span>'
+    );
+    
+    // Highlight urgency words
+    highlighted = highlighted.replace(
+      /(AGORA|URGENTE|BLOQUEADA|SUSPENSA|24 horas|12 horas|IMEDIATAMENTE)/g,
+      '<span class="highlight-phish" title="Urgência artificial">$1</span>'
+    );
+    
+    body.innerHTML = `
+      <div style="margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--border-color);">
+        <div><span style="color: var(--text-muted);">De:</span> <span class="highlight-phish" title="Domínio falso">${template.from}</span></div>
+        <div><span style="color: var(--text-muted);">Assunto:</span> <span class="highlight-phish" title="Assunto alarmista">${template.subject}</span></div>
+      </div>
+      ${highlighted}
+    `;
+    
+    // Techniques list
+    const techList = document.getElementById('techniquesList');
+    techList.innerHTML = template.techniques.map(t => `
+      <div class="technique-item">
+        <h5>${t.name}</h5>
+        <p>${t.desc}</p>
+      </div>
+    `).join('');
+    
+    document.getElementById('generatedEmailWrapper').classList.add('show');
+    document.getElementById('generatedEmailWrapper').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    Toast.show('info', 'Exemplo Gerado', `${brand.name}: exemplo educativo criado`);
+  },
+
+  escape(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+};
+
+/* ============================================
+   DASHBOARD MODULE
+   ============================================ */
+const Dashboard = {
+  chartsInitialized: false,
+  charts: {},
+
+  init() {
+    this.updateStats();
+    Achievements.render();
+    this.initCharts();
+  },
+
+  updateStats() {
+    const stats = Storage.get(Storage.keys.stats, Storage.getDefaultStats());
+    
+    this.animateNumber('stat-analyses', stats.analyses || 0);
+    this.animateNumber('stat-threats', stats.threats || 0);
+    this.animateNumber('stat-quizzes', stats.quizzes || 0);
+    document.getElementById('stat-avg-score').textContent = (stats.avgScore || 0) + '%';
+  },
+
+  animateNumber(id, target) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const current = parseInt(el.textContent) || 0;
+    if (current === target) return;
+    
+    const steps = 30;
+    const increment = (target - current) / steps;
+    let value = current;
+    let i = 0;
+    
+    const interval = setInterval(() => {
+      i++;
+      value += increment;
+      if (i >= steps) {
+        value = target;
+        clearInterval(interval);
+      }
+      el.textContent = Math.round(value);
+    }, 20);
+  },
+
+  initCharts() {
+    if (typeof Chart === 'undefined') {
+      console.warn('Chart.js não carregado');
+      return;
+    }
+    
+    const stats = Storage.get(Storage.keys.stats, Storage.getDefaultStats());
+    const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-secondary').trim();
+    const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim();
+    
+    Chart.defaults.color = textColor;
+    Chart.defaults.borderColor = gridColor;
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    
+    // Analyses chart
+    const ctx1 = document.getElementById('chart-analyses');
+    if (ctx1) {
+      const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const today = new Date().getDay();
+      const labels = [];
+      const data = [];
+      const last7 = stats.last7Days || [0,0,0,0,0,0,0];
+      
+      for (let i = 6; i >= 0; i--) {
+        const dayIndex = (today - i + 7) % 7;
+        labels.push(days[dayIndex]);
+        data.push(last7[dayIndex] || 0);
+      }
+      
+      this.charts.analyses = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Análises',
+            data: data,
+            borderColor: '#00d9ff',
+            backgroundColor: 'rgba(0, 217, 255, 0.1)',
+            tension: 0.4,
+            fill: true,
+            borderWidth: 2,
+            pointBackgroundColor: '#00d9ff',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { stepSize: 1 },
+              grid: { color: gridColor }
+            },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+    
+    // Threat types chart
+    const ctx2 = document.getElementById('chart-threats');
+    if (ctx2) {
+      const threatTypes = stats.threatTypes || { urgency: 0, links: 0, sensitive: 0, structure: 0 };
+      const data = [
+        threatTypes.urgency || 0,
+        threatTypes.links || 0,
+        threatTypes.sensitive || 0,
+        threatTypes.structure || 0
+      ];
+      
+      this.charts.threats = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['Urgência', 'Links', 'Dados', 'Estrutura'],
+          datasets: [{
+            data: data,
+            backgroundColor: [
+              '#ff3366',
+              '#ffb800',
+              '#00d9ff',
+              '#7b2cff'
+            ],
+            borderColor: '#0a0f1c',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { padding: 15, font: { size: 11 } }
+            }
+          }
+        }
+      });
+    }
+    
+    this.chartsInitialized = true;
+  },
+
+  updateCharts() {
+    if (!this.chartsInitialized) return;
+    
+    const stats = Storage.get(Storage.keys.stats, Storage.getDefaultStats());
+    
+    if (this.charts.analyses) {
+      const today = new Date().getDay();
+      const last7 = stats.last7Days || [0,0,0,0,0,0,0];
+      const data = [];
+      for (let i = 6; i >= 0; i--) {
+        const dayIndex = (today - i + 7) % 7;
+        data.push(last7[dayIndex] || 0);
+      }
+      this.charts.analyses.data.datasets[0].data = data;
+      this.charts.analyses.update();
+    }
+    
+    if (this.charts.threats) {
+      const threatTypes = stats.threatTypes || { urgency: 0, links: 0, sensitive: 0, structure: 0 };
+      this.charts.threats.data.datasets[0].data = [
+        threatTypes.urgency || 0,
+        threatTypes.links || 0,
+        threatTypes.sensitive || 0,
+        threatTypes.structure || 0
+      ];
+      this.charts.threats.update();
+    }
+  }
+};
+
+/* ============================================
+   UI MODULE - Tab switching
+   ============================================ */
+const UI = {
+  init() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchTab(btn.dataset.tab);
+      });
+    });
+  }
+};
+
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tabName);
+  });
+  document.querySelectorAll('.tab-content').forEach(c => {
+    c.classList.toggle('active', c.id === 'tab-' + tabName);
+  });
+  
+  // Refresh dashboard data when switching to it
+  if (tabName === 'dashboard') {
+    Dashboard.updateStats();
+    Achievements.render();
+    Dashboard.updateCharts();
+  }
+  
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ============================================
+   INITIALIZATION
+   ============================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  // Hide loading screen after content loads
+  setTimeout(() => {
+    document.getElementById('loadingScreen').classList.add('hidden');
+  }, 800);
+  
+  // Initialize all modules
+  Theme.init();
+  Particles.init();
+  UI.init();
+  Professor.init();
+  Generator.init();
+  Dashboard.init();
+  
+  // Welcome toast
+  setTimeout(() => {
+    const stats = Storage.get(Storage.keys.stats, Storage.getDefaultStats());
+    if (stats.analyses === 0) {
+      Toast.show('info', 'Bem-vindo ao Sentinel Mail!', 'Explore as abas para aprender e se proteger.');
+    } else {
+      Toast.show('success', 'Sistema Carregado', `Você já analisou ${stats.analyses} e-mails.`);
+    }
+  }, 1500);
+});
+</script>
+
+</body>
+</html>
